@@ -1,0 +1,5 @@
+rofi.combi-modi:    drun,ssh
+rofi.theme:         material
+rofi.font:          JetBrains Mono 10
+rofi.modi:          drun
+rofi.show-icons:    true
