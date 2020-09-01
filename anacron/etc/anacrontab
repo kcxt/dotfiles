@@ -1,0 +1,12 @@
+# /etc/anacrontab: configuration file for anacron
+
+# See anacron(8) and anacrontab(5) for details.
+
+# See anacron(8) and anacrontab(5) for details.
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# These replace cron's entries
+1                  5     daily-cron nice run-parts   --report /home/caleb/.anacron/cron.daily
+7                 10     weekly-cron nice run-parts  --report /home/caleb/.anacron/cron.weekly
+@monthly          15     monthly-cron nice run-parts --report /home/caleb/.anacron/cron.monthly

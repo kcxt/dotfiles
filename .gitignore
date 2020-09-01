@@ -1,2 +1,3 @@
 .GITHUB_KEY
 *.log
+*-cron

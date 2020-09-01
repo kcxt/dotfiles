@@ -12,6 +12,7 @@ source $WORKDIR/.GITHUB_KEY
 CHANGES=$(git status --porcelain=v1 2>/dev/null | wc -l)
 
 function hasChanged(){
+    notify-send "Pushing dotfile changes to github..."
     echo "Changes since last run, pushing..."
     git add .
     COMMIT_MSG="Auto-update: $CHANGES files changed."
