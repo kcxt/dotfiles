@@ -1,0 +1,332 @@
+#Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left j
+set $down k
+set $up i
+set $right l
+# Your preferred terminal emulator
+set $term alacritty
+# Your preferred application launcher
+# Note: pass the final command to swaymsg so that the resulting window can be opened
+# on the original workspace that the command was run on.
+set $menu bemenu
+
+gaps inner 4
+gaps outer 2
+
+### Output configuration
+set $Mon1 eDP-1
+set $Mon2 HDMI-A-1
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output * bg /home/caleb/Pictures/space.png fill
+output $Mon2 resolution 3840x2160 position 0,0
+output $Mon1 resolution 1920x1080 position 960,2160
+
+for_window [class="^.*"] border pixel 0
+
+
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+### Idle configuration
+set $swaylock swaylock -f -i /home/caleb/Pictures/space.png
+exec_always killall swayidle
+exec_always sleep 0.2 && swayidle -w \
+          timeout 1200 '$swaylock' \
+          timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+          before-sleep '$swaylock'
+
+for_window [class="vlc"] inhibit_idle fullscreen
+
+### Input configuration
+
+input "2:14:ETPS/2_Elantech_Touchpad" {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+input "2:14:ETPS/2_Elantech_TrackPoint" {
+    dwt disabled
+    middle_emulation enabled
+    accel_profile flat
+    pointer_accel 0.5
+}
+
+input "1133:16505:Logitech_G_Pro" {
+    dwt disabled
+    accel_profile flat
+    pointer_accel 0
+}
+
+input "8146:32773:Melfas_LGDisplay_Incell_Touch" {
+    drag enabled
+    map_to_output eDP-1
+}
+
+input "type:keyboard" {
+    repeat_rate 40
+    repeat_delay 230
+}
+
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
+
+input * xkb_layout "gb"
+floating_modifier $mod
+
+# Startup
+
+exec_always --no-startup-id "killall waybar; waybar"
+exec_always --no-startup-id "killall mako; mako --default-timeout 3500"
+exec --no-startup-id nm-applet --indicator
+exec --no-startup-id kdeconnect-indicator
+exec --no-startup-id systemctl --user start blueman-applet.service
+
+# Start all the messaging stuff
+
+### Key bindings
+#
+# Basics:
+#
+    # Start a terminal
+    bindsym $mod+Return exec $term
+    bindsym $mod+w          exec --no-startup-id firefox
+    bindsym $mod+e          exec --no-startup-id nemo
+    bindsym $mod+t          exec --no-startup-id termite -e bash
+    bindsym $mod+x          exec --no-startup-id code
+    # Kill focused window
+    bindsym $mod+Shift+q kill
+
+    # Hacky fix for xwayland links not opening with an error
+    exec_always --no-startup-id xdg-settings set default-web-browser firefox-nightly.desktop
+
+    # Start your launcher
+    bindsym $mod+d exec j4-dmenu-desktop --display-binary --dmenu='bemenu -i --nb "#3f3f3f" --nf "#dcdccc" --fn "JetBrains Mono 12"' --term='alacritty'
+
+    # Screenshot
+    bindsym Print exec --no-startup-id grimshot copy area
+
+    bindsym $mod+c reload
+
+    # Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+    # Reload the configuration file
+    bindsym $mod+Shift+c reload
+
+    # Dismiss notification
+    bindsym Ctrl+Space exec makoctl dismiss
+    bindsym $mod+Ctrl+l exec $swaylock
+    # Exit sway (logs you out of your Wayland session)
+    bindsym $mod+Shift+e exec 3swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+#
+# Moving around:
+#
+    # Move your focus around
+    bindsym $mod+$left focus left
+    bindsym $mod+$down focus down
+    bindsym $mod+$up focus up
+    bindsym $mod+$right focus right
+
+    # Move the focused window with the same, but add Shift
+    bindsym $mod+Shift+$left move left
+    bindsym $mod+Shift+$down move down
+    bindsym $mod+Shift+$up move up
+    bindsym $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    bindsym $mod+Shift+Left move left
+    bindsym $mod+Shift+Down move down
+    bindsym $mod+Shift+Up move up
+    bindsym $mod+Shift+Right move right
+
+# audio
+bindsym $mod+Down      exec --no-startup-id playerctl play-pause
+bindsym $mod+Right     exec --no-startup-id playerctl next
+bindsym $mod+Left      exec --no-startup-id playerctl previous
+bindsym $mod+Up        exec --no-startup-id playerctl play-pause
+
+bindsym XF86AudioMute        exec --no-startup-id vctrl.sh -m
+bindsym XF86AudioRaiseVolume exec --no-startup-id vctrl.sh -i 1
+bindsym XF86AudioLowerVolume exec --no-startup-id vctrl.sh -d 1
+
+bindsym XF86AudioMicMute        exec --no-startup-id amixer set Capture toggle
+
+# backlight
+bindsym XF86MonBrightnessUp exec --no-startup-id light -T 1.30
+bindsym XF86MonBrightnessDown exec --no-startup-id light -T 0.76
+
+# Show current playing track using sp/spotifyd
+bindsym $mod+Ctrl+Space exec --no-startup-id $HOME/bin/spcurrent.sh
+
+#
+# workspaces
+#
+set $WS1  "1"
+set $WS2  "2"
+set $WS3  "3"
+set $WS4  "4"
+set $WS5  "5"
+set $WS6  "6"
+set $WS7  "7"
+set $WS8  "8"
+set $WS9  "9"
+set $WS10 "10"
+set $WS11 "11"
+set $WS12 "12"
+set $WS13 "13"
+set $WS14 "14"
+set $WS15 "@"
+set $WS16 "~"
+
+# workspace assignment
+workspace $WS1  output $Mon1
+workspace $WS2  output $Mon1
+workspace $WS3  output $Mon1
+workspace $WS4  output $Mon1
+workspace $WS5  output $Mon1
+workspace $WS6  output $Mon1
+workspace $WS7  output $Mon1
+workspace $WS8  output $Mon1
+workspace $WS9  output $Mon2 $Mon1
+workspace $WS10 output $Mon2 $Mon1
+workspace $WS11 output $Mon2 $Mon1
+workspace $WS12 output $Mon2 $Mon1
+workspace $WS13 output $Mon2 $Mon1
+workspace $WS14 output $Mon2 $Mon1
+workspace $WS15 output $Mon1
+workspace $WS16 output $Mon1
+
+# switch to workspace
+# Small monitor (HDMI)
+bindsym $mod+1       workspace $WS1
+bindsym $mod+2       workspace $WS2
+bindsym $mod+3       workspace $WS3
+bindsym $mod+4       workspace $WS4
+bindsym $mod+5       workspace $WS5
+bindsym $mod+6       workspace $WS6
+bindsym $mod+7       workspace $WS7
+bindsym $mod+8       workspace $WS8
+bindsym $mod+9       workspace $WS9
+bindsym $mod+0       workspace $WS10
+bindsym $mod+minus   workspace $WS11
+bindsym $mod+equal   workspace $WS12
+bindsym $mod+bracketleft workspace $WS13
+bindsym $mod+bracketright workspace $WS14
+bindsym $mod+apostrophe   workspace $WS15
+bindsym $mod+numbersign   workspace $WS16
+
+
+# switch to next or previous workspace
+bindsym $mod+Mod1+Left workspace prev
+bindsym $mod+Mod1+Right workspace next
+
+# move focused container to workspace
+bindsym  $mod+Shift+1      move container to workspace $WS1;  workspace $WS1
+bindsym  $mod+Shift+2      move container to workspace $WS2;  workspace $WS2
+bindsym  $mod+Shift+3      move container to workspace $WS3;  workspace $WS3
+bindsym  $mod+Shift+4      move container to workspace $WS4;  workspace $WS4
+bindsym  $mod+Shift+5      move container to workspace $WS5;  workspace $WS5
+bindsym  $mod+Shift+6      move container to workspace $WS6;  workspace $WS6
+bindsym  $mod+Shift+7      move container to workspace $WS7;  workspace $WS7
+bindsym  $mod+Shift+8      move container to workspace $WS8;  workspace $WS8
+bindsym  $mod+Shift+9      move container to workspace $WS9;  workspace $WS9
+bindsym  $mod+Shift+0      move container to workspace $WS10; workspace $WS10
+bindsym  $mod+Shift+minus  move container to workspace $WS11; workspace $WS11
+bindsym  $mod+Shift+equal  move container to workspace $WS12; workspace $WS12
+bindsym  $mod+Shift+bracketleft  move container to workspace $WS13; worksapce $WS13
+bindsym  $mod+Shift+bracketright move container to workspace $WS14; workspace $WS14
+bindsym  $mod+Shift+apostrophe   move container to workspace $WS15; workspace $WS15
+bindsym  $mod+Shift+numbersign   move container to workspace $WS16; workspace $WS16
+
+# Send container (don't also switch to the workspace
+bindsym  $mod+Ctrl+1 	           move container to workspace $WS1
+bindsym  $mod+Ctrl+2               move container to workspace $WS2
+bindsym  $mod+Ctrl+3               move container to workspace $WS3
+bindsym  $mod+Ctrl+4               move container to workspace $WS4
+bindsym  $mod+Ctrl+5               move container to workspace $WS5
+bindsym  $mod+Ctrl+6               move container to workspace $WS6
+bindsym  $mod+Ctrl+7               move container to workspace $WS7
+bindsym  $mod+Ctrl+8               move container to workspace $WS8
+bindsym  $mod+Ctrl+9               move container to workspace $WS9
+bindsym  $mod+Ctrl+0               move container to workspace $WS10
+bindsym  $mod+Ctrl+minus           move container to workspace $WS11
+bindsym  $mod+Ctrl+equal           move container to workspace $WS12
+bindsym  $mod+Ctrl+bracketleft    move container to workspace $WS13
+bindsym  $mod+Ctrl+bracketright   move container to workspace $WS14
+bindsym  $mod+Ctrl+apostrophe     move container to workspace $WS15
+bindsym  $mod+Ctrl+numbersign     move container to workspace $WS16
+#
+# Layout stuff:
+#
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    bindsym $mod+h splith
+    bindsym $mod+v splitv
+
+    # Switch the current container between different layout styles
+    bindsym $mod+s layout tabbed
+
+    # Make the current focus fullscreen
+    bindsym $mod+f fullscreen
+
+    # Toggle the current focus between tiling and floating mode
+    bindsym $mod+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    bindsym $mod+Shift+space focus mode_toggle
+
+    # Move focus to the parent container
+    bindsym $mod+a focus parent
+
+    # size
+bindsym Shift+Mod1+Up    resize shrink height 20 px or 2 ppt
+bindsym Shift+Mod1+Down  resize grow   height 20 px or 2 ppt
+bindsym Shift+Mod1+Left  resize shrink width  20 px or 2 ppt
+bindsym Shift+Mod1+Right resize grow   width  20 px or 2 ppt
+
+
+# Application defaults
+for_window [class="spotify"] move container to workspace $WS16
+for_window [class="Element"] move container to workspace $WS15; layout tabbed
+for_window [class="discord"] move container to workspace $WS15
+for_window [class="TelegramDesktop"] move container to workspace $WS15
+for_window [app_id="thunderbird"] move container to workspace $WS15
+
+# UI applications to autostart
+exec --no-startup-id element-desktop
+exec --no-startup-id telegram-desktop
+exec --no-startup-id discord
+exec --no-startup-id spotify
+exec --no-startup-id env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
+
+default_border none
+hide_edge_borders both
+
+# Yuckiness because the above doesn't work
+font JetBrains mono 10
+#titlebar_border_thickness 0                                                     
+titlebar_padding 1
+
+# The best config option :D - breaks "move container to workspace"
+#workspace_auto_back_and_forth yes
+
+include /etc/sway/config.d/*
