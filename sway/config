@@ -96,6 +96,8 @@ exec --no-startup-id nm-applet --indicator
 exec --no-startup-id kdeconnect-indicator
 exec --no-startup-id systemctl --user start blueman-applet.service
 
+# Start anacron using $HOME/.anacron as cron job storage (symlinked to dotfiles)
+exec --no-startup-id /usr/sbin/anacron -d -t $HOME/.anacron/etc/anacrontab -S $HOME/.anacron/spool &> $HOME/.anacron/anacron.log
 # Start all the messaging stuff
 
 ### Key bindings

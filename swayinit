@@ -1,14 +1,9 @@
 #!/bin/zsh
 
-gnome-keyring-daemon --start --components=pkcs11 &
-/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
-
-# Start anacron using $HOME/.anacron as cron job storage (symlinked to dotfiles)
-/usr/sbin/anacron -d -t $HOME/.anacron/etc/anacrontab -S $HOME/.anacron/spool &> $HOME/.anacron/anacron.log &
+[[ ! $(ps a | grep gnome-keyring-daemon) ]] && gnome-keyring-daemon --start --components=pkcs11 &
+[[ ! $(ps a | grep polkit) ]] && /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 &
 
 # environment
 export QT_QPA_PLATFORM=wayland
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
-# Done here
-touch /tmp/sway-started
