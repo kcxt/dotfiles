@@ -27,8 +27,8 @@ compinit
 # End of lines added by compinstall
 # Lines configured by zsh-newuser-install
 HISTFILE=~/.zsh_history
-HISTSIZE=10000
-SAVEHIST=10000
+HISTSIZE=1000000
+SAVEHIST=1000000
 setopt appendhistory
 #setopt appendhistory autocd
 #unsetopt extendedglob nomatch notify
@@ -41,8 +41,6 @@ alias ls="ls --color=auto -h -k -s"
 
 alias x="chmod +x"
 alias sz="source ~/.zshrc"
-
-alias adb="sudo adb" #BAD hack
 
 alias vim=nvim
 
@@ -128,6 +126,9 @@ export PATH="$PATH:$HOME/bin"
 ### MY STUFF ###
 ################
 
+# YUCK
+export PATH="$PATH:/snap/bin"
+
 # ccache must be before /usr/bin so that we get cache hits
 export PATH="/usr/lib/ccache/bin:$PATH"
 
@@ -173,3 +174,4 @@ makekernelflash() {
 
 # Start polkit and keyring before sway
 alias w="[[ ! -f /tmp/sway-started ]] && source .swayinit; sway"
+alias g="if [[ -z '$DISPLAY' && $(tty) == /dev/tty1 && $XDG_SESSION_TYPE == tty ]]; then; MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM=wayland XDG_SESSION_TYPE=wayland exec dbus-run-session gnome-session; fi"
