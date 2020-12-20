@@ -172,6 +172,9 @@ makekernelflash() {
 	popd > /dev/null
 }
 
+export PATH=$HOME/bin/aarch64/aarch64-linux-android-4.9/bin/:$PATH
+alias ma="make CC=aarch64-linux-android-gcc CROSS_COMPILE=aarch64-linux-android- O=.output/ ARCH=arm64 -j14"
+
 # Start polkit and keyring before sway
 alias w="[[ ! -f /tmp/sway-started ]] && source .swayinit; sway"
 alias g="if [[ -z '$DISPLAY' && $(tty) == /dev/tty1 && $XDG_SESSION_TYPE == tty ]]; then; MOZ_ENABLE_WAYLAND=1 QT_QPA_PLATFORM=wayland XDG_SESSION_TYPE=wayland exec dbus-run-session gnome-session; fi"

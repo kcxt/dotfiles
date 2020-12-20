@@ -30,12 +30,16 @@ set $Mon3 DP-1
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * bg /home/caleb/Pictures/space.png fill
 output $Mon2 resolution 3840x2160 position 1920,0
-output $Mon1 resolution 1920x1080 position 5760,540
+output $Mon1 resolution 1920x1080 position 0,540
+#5760,540
 output $Mon3 resolution 1920x1080@144Hz position 0,540
 
 
 for_window [class="^.*"] border pixel 0
 
+set $opacity 1
+for_window [class=".*"] opacity $opacity
+for_window [app_id=".*"] opacity $opacity
 
 #
 # Example configuration:
@@ -109,7 +113,7 @@ exec --no-startup-id /usr/sbin/anacron -d -t $HOME/.anacron/etc/anacrontab -S $H
 #
     # Start a terminal
     bindsym $mod+Return exec $term
-    bindsym $mod+w          exec --no-startup-id google-chrome-stable
+    bindsym $mod+w          exec --no-startup-id firefox
     bindsym $mod+e          exec --no-startup-id nemo
     bindsym $mod+t          exec --no-startup-id termite -e bash
     bindsym $mod+x          exec --no-startup-id code
@@ -117,7 +121,7 @@ exec --no-startup-id /usr/sbin/anacron -d -t $HOME/.anacron/etc/anacrontab -S $H
     bindsym $mod+Shift+q kill
 
     # Hacky fix for xwayland links not opening with an error
-    exec_always --no-startup-id xdg-settings set default-web-browser google-chrome-stable.desktop
+    exec_always --no-startup-id xdg-settings set default-web-browser firefox.desktop
 
     # Start your launcher
     bindsym $mod+d exec j4-dmenu-desktop --display-binary --dmenu='bemenu -i --nb "#3f3f3f" --nf "#dcdccc" --fn "JetBrains Mono 12"' --term='alacritty'
@@ -356,11 +360,9 @@ bindsym Shift+Mod1+Right resize grow   width  20 px or 2 ppt
 # Application defaults
 for_window [class="spotify"] move container to workspace $WS16
 for_window [class="Element"] move container to workspace $WS15; layout tabbed
-for_window [class="discord"] move container to workspace $WS15
-for_window [class="TelegramDesktop"] move container to workspace $WS15
+for_window [class="lightcord"] move container to workspace $WS15
+for_window [app_id="telegramdesktop"] move container to workspace $WS15
 for_window [app_id="thunderbird"] move container to workspace $WS15
-
-for_window [class="com.group21.App"] floating enable
 
 # Start protonmail bridge now, the user service doesn't work ??
 exec --no-startup-id /usr/bin/protonmail-bridge --noninteractive -l info > /tmp/protonmail-bridge.log
@@ -368,7 +370,7 @@ exec --no-startup-id /usr/bin/protonmail-bridge --noninteractive -l info > /tmp/
 # UI applications to autostart
 exec --no-startup-id element-desktop
 exec --no-startup-id telegram-desktop
-exec --no-startup-id discord
+exec --no-startup-id lightcord
 exec --no-startup-id spotify
 exec --no-startup-id env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
 
