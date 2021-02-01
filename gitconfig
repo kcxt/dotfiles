@@ -1,0 +1,29 @@
+[user]
+	email = caleb@connolly.tech
+	name = Caleb Connolly
+	signingkey = 0083103678367568
+[commit]
+	gpgsign = true
+[color]
+	ui = auto
+[merge]
+	renamelimit = 2000
+[alias]
+	ls = "!git log --oneline | head -n 8"
+	s = "!git status -s"
+	lc = "show --pretty=\"\" --name-only"
+	c = commit -s
+[sendemail]
+  smtpuser = caleb@connolly.tech
+  smtpserver = 127.0.0.1
+  smtpencryption = STARTTLS
+  smtpserverport = 1025
+[sendemail.linux]
+    tocmd ="`pwd`/scripts/get_maintainer.pl --nogit --nogit-fallback --norolestats --nol"
+    cccmd ="`pwd`/scripts/get_maintainer.pl --nogit --nogit-fallback --norolestats --nom"
+
+[pull]
+	rebase = true
+
+[credential]
+	helper = libsecret
