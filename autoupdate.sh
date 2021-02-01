@@ -1,6 +1,6 @@
 #!/bin/sh
 
-WORKDIR=/home/caleb/dotfiles
+WORKDIR=/home/caleb/git/dotfiles
 pushd $WORKDIR
 
 LOGFILE=$WORKDIR/dotfiles-update.log

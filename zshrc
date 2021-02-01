@@ -34,7 +34,7 @@ setopt appendhistory
 #unsetopt extendedglob nomatch notify
 
 export TERM=xterm-256color
-export EDITOR=$(which xed)
+export EDITOR=$(which gedit)
 
 alias cfz="$EDITOR $HOME/.zshrc"
 alias ls="ls --color=auto -h -k -s"
@@ -47,7 +47,7 @@ alias vim=nvim
 alias history="history 0" #Get all history not just last 5 commands
 
 # End of lines configured by zsh-newuser-install
-source $HOME/Documents/Software/powerlevel10k/powerlevel10k.zsh-theme
+source $HOME/git/powerlevel10k/powerlevel10k.zsh-theme
 #source ~/powerlevel10k/.purepower
 
 # This is important, it makes keybinds work...
@@ -109,10 +109,10 @@ zle -N down-line-or-beginning-search
 [[ -n "${key[Down]}" ]] && bindkey -- "${key[Down]}" down-line-or-beginning-search
 
 # Enable autosuggestions
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 # Enable syntax highlighting
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 # Created by `userpath` on 2019-10-29 14:18:59
 export PATH="$PATH:$HOME/.local/bin"
@@ -128,13 +128,27 @@ export PATH="$PATH:$HOME/bin"
 
 # YUCK
 export PATH="$PATH:/snap/bin"
-
+export PATH="$PATH:/opt/sierrawireless/swicwe/linux64"
 # ccache must be before /usr/bin so that we get cache hits
 export PATH="/usr/lib/ccache/bin:$PATH"
 
+# crosstools
+export PATH=$PATH:$HOME/bin/crosstools/bin
+export PATH=$PATH:$HOME/bin/arm-926ejs-eabi/bin
+export PATH="$PATH:$HOME/bin/gcc-arm-none-eabi-10-2020-q4-major/bin"
+
 export EDITOR=$(which nvim) 
 
+# Custom functions
+function ovpn() {
+	sudo openvpn $HOME/.openvpn/$1.openvpn
+}
+# VPN back home :D
+alias vpn="ovpn caleb-noah"
 
+## UBPORTS
+local UBENV=$HOME/ubports/enchilada/documentation/ubenv
+[[ -f $UBENV ]] && source $UBENV
 ## POSTMARKETOS
 
 # Enable autocomplete for pmbootrstrap commands
@@ -142,7 +156,7 @@ autoload bashcompinit
 bashcompinit
 eval "$(register-python-argcomplete pmbootstrap)"
 
-alias marm="make O=.output/ ARCH=arm CROSS_COMPILE=/usr/bin/arm-none-eabi- -j13"
+alias mandroid="make CC=/usr/bin/clang O=.output/ ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- -j16"
 
 local PMENV=$HOME/pmos/tools/pmenv
 [[ -f $PMENV ]] && source $PMENV
@@ -151,7 +165,7 @@ local PMENV=$HOME/pmos/tools/pmenv
 ## Sailfish crap
 
 export PLATFORM_SDK_ROOT="/srv/mer"
-export ANDROID_ROOT="$HOME/sfos/hadk"
+export ANDROID_ROOT="$HOME/sfos/enchilada/hadk"
 alias sfossdk="$PLATFORM_SDK_ROOT/sdks/sfossdk/mer-sdk-chroot"
 
 
@@ -172,7 +186,8 @@ makekernelflash() {
 	popd > /dev/null
 }
 
-export PATH=$HOME/bin/aarch64/aarch64-linux-android-4.9/bin/:$PATH
+export PATH=$HOME/bin/arm-linux-androideabi-4.9/bin:$PATH
+export PATH=$HOME/bin/aarch64-linux-android-4.9/bin:$PATH
 alias ma="make CC=aarch64-linux-android-gcc CROSS_COMPILE=aarch64-linux-android- O=.output/ ARCH=arm64 -j14"
 
 # Start polkit and keyring before sway
