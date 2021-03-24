@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+alias icat="kitty icat --align=left"
+alias isvg="rsvg-convert -s $DOTFILES/dfa.css | icat"
+
+alias idot="dot -Tpng | icat"
+
+redot() {
+	REG2DFA="$DOTFILES/../reg2dfa"
+	re="$1"
+	npm start "$re" --prefix="$REG2DFA" > /dev/null
+	cat "$REG2DFA/nfa.dot" | idot
+
+}

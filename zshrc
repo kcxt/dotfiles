@@ -126,6 +126,14 @@ export PATH="$PATH:$HOME/bin"
 ### MY STUFF ###
 ################
 
+# Source extra scripts
+export DOTFILES="$(realpath $HOME/$(readlink $HOME/.zshrc))"
+if [ ! -z "$DOTFILES" ]; then # we are a symlink, to my dotfiles
+	DOTFILES="$(dirname $DOTFILES)"
+	source "$DOTFILES"/extras/*
+fi
+
+
 # YUCK
 export PATH="$PATH:/snap/bin"
 export PATH="$PATH:/opt/sierrawireless/swicwe/linux64"
