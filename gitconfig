@@ -1,7 +1,7 @@
 [user]
 	email = caleb@connolly.tech
 	name = Caleb Connolly
-	signingkey = 0083103678367568
+	signingkey = 0CD904EB673A7C47
 [commit]
 	gpgsign = true
 [color]

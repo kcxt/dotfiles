@@ -146,6 +146,10 @@ function ovpn() {
 # VPN back home :D
 alias vpn="ovpn caleb-noah"
 
+function b64() {
+	echo -e "$(echo $1 | base64 -d)\n"
+}
+
 ## UBPORTS
 local UBENV=$HOME/ubports/enchilada/documentation/ubenv
 [[ -f $UBENV ]] && source $UBENV
@@ -165,9 +169,22 @@ local PMENV=$HOME/pmos/tools/pmenv
 ## Sailfish crap
 
 export PLATFORM_SDK_ROOT="/srv/mer"
-export ANDROID_ROOT="$HOME/sfos/enchilada/hadk"
+export ANDROID_ROOT="$HOME/sfos/hadk"
 alias sfossdk="$PLATFORM_SDK_ROOT/sdks/sfossdk/mer-sdk-chroot"
 
+
+habuild () 
+{ 
+    source $HOME/.hadk.env;
+    if [ -d "$ANDROID_ROOT/external" ]; then
+        cd "$ANDROID_ROOT";
+        source build/envsetup.sh;
+        breakfast $DEVICE;
+        export CCACHE_DISABLE=1;
+        export TEMPORARY_DISABLE_PATH_RESTRICTIONS=true;
+		export ALLOW_MISSING_DEPENDENCIES=true;
+    fi
+}
 
 ## Android crap
 
