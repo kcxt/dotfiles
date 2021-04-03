@@ -170,9 +170,9 @@ eval "$(register-python-argcomplete pmbootstrap)"
 
 alias mandroid="make CC=/usr/bin/clang O=.output/ ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- -j16"
 
-local PMENV=$HOME/pmos/tools/pmenv
-[[ -f $PMENV ]] && source $PMENV
-
+local PMTOOLS=$HOME/pmos/tools/
+[[ -f "$PMTOOLS"/pmenv ]] && source $PMTOOLS/pmenv
+[[ -f "$PMTOOLS"/automation.sh ]] && source $PMTOOLS/automation.sh
 
 ## Sailfish crap
 
