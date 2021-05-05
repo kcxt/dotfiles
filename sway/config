@@ -299,7 +299,7 @@ bindsym  $mod+Shift+period   move container to workspace $WS21; workspace $WS21
 bindsym  $mod+Shift+slash   move container to workspace $WS22; workspace $WS22
 bindsym  $mod+Shift+semicolon   move container to workspace $WS23; workspace $WS23
 
-# Send container (don't also switch to the workspace
+# Send container (don't also switch to the workspace)
 bindsym  $mod+Ctrl+1 	           move container to workspace $WS1
 bindsym  $mod+Ctrl+2               move container to workspace $WS2
 bindsym  $mod+Ctrl+3               move container to workspace $WS3
