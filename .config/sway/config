@@ -1,0 +1,386 @@
+#Default config for sway
+#
+# Copy this to ~/.config/sway/config and edit it to your liking.
+#
+# Read `man 5 sway` for a complete reference.
+
+### Variables
+#
+# Logo key. Use Mod1 for Alt.
+set $mod Mod4
+# Home row direction keys, like vim
+set $left j
+set $down k
+set $up i
+set $right l
+# Your preferred terminal emulator
+set $term alacritty 
+# Your preferred application launcher
+# Note: pass the final command to swaymsg so that the resulting window can be opened
+# on the original workspace that the command was run on.
+set $menu bemenu
+
+gaps inner 2
+gaps outer 1
+
+### Output configuration
+set $Mon1 DP-2
+set $Mon2 HDMI-A-1
+set $Mon3 DP-1
+set $Mon4 DP-1
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output * bg ~/Pictures/wallpaper.png fill
+output $Mon1 resolution 3840x2160 position 2160,650
+#5760,540
+output $Mon3 resolution 3840x2160 position 6000,650
+output $Mon2 resolution 3840x2160 transform 270 position 0,0
+
+for_window [class="^.*"] border pixel 0
+
+set $opacity 1
+for_window [class=".*"] opacity $opacity
+for_window [app_id=".*"] opacity $opacity
+
+#
+# Example configuration:
+#
+#   output HDMI-A-1 resolution 1920x1080 position 1920,0
+#
+# You can get the names of your outputs by running: swaymsg -t get_outputs
+### Idle configuration
+#set $swaylock swaylock -f -i /home/caleb/Pictures/space.png
+set $swaylock swaylock-blur
+
+exec_always killall swayidle
+#exec_always sleep 0.2 && swayidle -w \
+#          timeout 1200 '$swaylock' \
+#          timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
+#          before-sleep '$swaylock'
+
+for_window [class="vlc"] inhibit_idle fullscreen
+
+### Input configuration
+
+input "2:14:ETPS/2_Elantech_Touchpad" {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+}
+
+input "2:14:ETPS/2_Elantech_TrackPoint" {
+    dwt disabled
+    middle_emulation enabled
+    accel_profile flat
+    pointer_accel 0.5
+}
+
+input "1133:16505:Logitech_G_Pro" {
+    dwt disabled
+    accel_profile adaptive
+    pointer_accel -0.1
+    scroll_factor 2
+}
+
+input "8146:32773:Melfas_LGDisplay_Incell_Touch" {
+    drag enabled
+    map_to_output eDP-1
+}
+
+input "type:keyboard" {
+    repeat_rate 40
+    repeat_delay 230
+}
+
+# You can get the names of your inputs by running: swaymsg -t get_inputs
+# Read `man 5 sway-input` for more information about this section.
+
+input * xkb_layout "gb"
+floating_modifier $mod
+
+# Startup
+
+exec_always --no-startup-id "killall waybar; waybar"
+exec_always --no-startup-id "killall mako; mako"
+exec --no-startup-id systemctl --user start blueman-applet.service
+
+# Start anacron using $HOME/.anacron as cron job storage (symlinked to dotfiles)
+#exec --no-startup-id /usr/sbin/anacron -d -t $HOME/.anacron/etc/anacrontab -S $HOME/.anacron/spool &> $HOME/.anacron/anacron.log
+# Start all the messaging stuff
+
+# Hacky fix for xwayland links not opening with an error
+    exec_always --no-startup-id xdg-settings set default-web-browser google-chrome-unstable.desktop 
+
+# Drag floating windows by holding down $mod and left mouse button.
+    # Resize them with right mouse button + $mod.
+    # Despite the name, also works for non-floating windows.
+    # Change normal to inverse to use left mouse button for resizing and right
+    # mouse button for dragging.
+    floating_modifier $mod normal
+
+### Key bindings
+#
+# Basics:
+#
+bindsym {
+    # Start a terminal
+    $mod+Return exec $term
+    $mod+w          exec --no-startup-id google-chrome-unstable # --enable-features=UseOzonePlatform --ozone-platform=wayland
+    $mod+e          exec --no-startup-id nemo
+    $mod+x          exec --no-startup-id code --enable-features=UseOzonePlatform --ozone-platform=wayland
+    # Kill focused window
+    $mod+Shift+q kill
+
+    # Start your launcher
+    $mod+d exec j4-dmenu-desktop --display-binary --dmenu='bemenu -i --nb "#3f3f3f" --nf "#dcdccc" --fn "JetBrains Mono 12"' --term='kitty'
+
+    # Screenshot
+    Print exec --no-startup-id $HOME/.local/bin/scap.sh -u
+    # Screenshot and send off
+    Ctrl+Print exec --no-startup-id $HOME/.local/bin/scap.sh
+
+    $mod+c reload
+
+    # Reload the configuration file
+    $mod+Shift+c reload
+
+    # Dismiss notification
+    Ctrl+Space exec makoctl dismiss
+    Ctrl+grave exec makoctl restore
+    $mod+Ctrl+l exec $swaylock
+    # Exit sway (logs you out of your Wayland session)
+    $mod+Shift+e exec swaynag -t warning -m 'You pressed the exit shortcut. Do you really want to exit sway? This will end your Wayland session.' -b 'Yes, exit sway' 'swaymsg exit'
+    #
+    # Moving around:
+    #
+    # Move your focus around
+    $mod+$left focus left
+    $mod+$down focus down
+    $mod+$up focus up
+    $mod+$right focus right
+
+    # Move the focused window with the same, but add Shift
+    $mod+Shift+$left move left
+    $mod+Shift+$down move down
+    $mod+Shift+$up move up
+    $mod+Shift+$right move right
+    # Ditto, with arrow keys
+    $mod+Shift+Left move left
+    $mod+Shift+Down move down
+    $mod+Shift+Up move up
+    $mod+Shift+Right move right
+
+    # audio
+    $mod+Down      exec --no-startup-id playerctl play-pause
+    $mod+Right     exec --no-startup-id playerctl next
+    $mod+Left      exec --no-startup-id playerctl previous
+    $mod+Up        exec --no-startup-id playerctl play-pause
+
+    XF86AudioPlay      exec --no-startup-id playerctl play-pause
+    XF86AudioNext     exec --no-startup-id playerctl next
+    XF86AudioPrev      exec --no-startup-id playerctl previous
+
+    XF86AudioMute        exec --no-startup-id pamixer -t
+    XF86AudioRaiseVolume exec --no-startup-id pamixer -i 1
+    XF86AudioLowerVolume exec --no-startup-id pamixer -d 1
+
+    XF86AudioMicMute        exec --no-startup-id pamixer --source 56 -t
+
+    # backlight
+    XF86MonBrightnessUp exec --no-startup-id light -T 1.30
+    XF86MonBrightnessDown exec --no-startup-id light -T 0.76
+
+    #
+    # Layout stuff:
+    #
+    # You can "split" the current object of your focus with
+    # $mod+b or $mod+v, for horizontal and vertical splits
+    # respectively.
+    $mod+h splith
+    $mod+v splitv
+
+    # Switch the current container between different layout styles
+    $mod+s layout tabbed
+
+    # Make the current focus fullscreen
+    $mod+f fullscreen
+    # Keep window on all workspaces
+    $mod+Shift+f sticky toggle
+    # Toggle the current focus between tiling and floating mode
+    $mod+space floating toggle
+
+    # Swap focus between the tiling area and the floating area
+    $mod+Shift+space focus mode_toggle
+
+    # Move focus to the parent container
+    $mod+a focus parent
+
+    # size
+    Shift+Mod1+Up    resize shrink height 20 px or 2 ppt
+    Shift+Mod1+Down  resize grow   height 20 px or 2 ppt
+    Shift+Mod1+Left  resize shrink width  20 px or 2 ppt
+    Shift+Mod1+Right resize grow   width  20 px or 2 ppt
+
+}
+
+#
+# workspaces
+#
+set $WS1  "1"
+set $WS2  "2"
+set $WS3  "3"
+set $WS4  "4"
+set $WS5  "5"
+set $WS6  "6"
+set $WS7  "7"
+set $WS8  "8"
+set $WS9  "9"
+set $WS10 "10"
+set $WS11 "11"
+set $WS12 "12"
+set $WS13 "13"
+set $WS14 "14"
+set $WS15 "@"
+set $WS16 "~"
+set $WS17 "b"
+set $WS18 "n"
+set $WS19 "m"
+set $WS20 ","
+set $WS21 "."
+set $WS22 "/"
+set $WS23 ";"
+
+# workspace assignment
+workspace $WS1  output $Mon1
+workspace $WS2  output $Mon1
+workspace $WS3  output $Mon1
+workspace $WS4  output $Mon1
+workspace $WS5  output $Mon1
+workspace $WS6  output $Mon1
+workspace $WS7  output $Mon1
+workspace $WS8  output $Mon1
+workspace $WS9  output $Mon1
+workspace $WS10 output $Mon1
+workspace $WS11 output $Mon2
+workspace $WS12 output $Mon2
+workspace $WS13 output $Mon2
+workspace $WS14 output $Mon2
+workspace $WS15 output $Mon3
+workspace $WS16 output $Mon3
+workspace $WS17 output $Mon3
+workspace $WS18 output $Mon3
+workspace $WS19 output $Mon3
+workspace $WS20 output $Mon4 $Mon3
+workspace $WS21 output $Mon4 $Mon3
+workspace $WS22 output $Mon4 $Mon3
+workspace $WS23 output $Mon4 $Mon3
+
+
+bindsym {
+    # switch to workspace
+    $mod+1       workspace $WS1
+    $mod+2       workspace $WS2
+    $mod+3       workspace $WS3
+    $mod+4       workspace $WS4
+    $mod+5       workspace $WS5
+    $mod+6       workspace $WS6
+    $mod+7       workspace $WS7
+    $mod+8       workspace $WS8
+    $mod+9       workspace $WS9
+    $mod+0       workspace $WS10
+    $mod+minus   workspace $WS11
+    $mod+equal   workspace $WS12
+    $mod+bracketleft workspace $WS13
+    $mod+bracketright workspace $WS14
+    $mod+apostrophe   workspace $WS15
+    $mod+numbersign    workspace $WS16
+    $mod+grave    workspace $WS16
+    $mod+b            workspace $WS17
+    $mod+n            workspace $WS18
+    $mod+m            workspace $WS19
+    $mod+comma        workspace $WS20
+    $mod+period       workspace $WS21
+    $mod+slash        workspace $WS22
+    $mod+semicolon    workspace $WS23
+
+    # move focused container to workspace
+    $mod+Shift+1      move container to workspace $WS1;  workspace $WS1
+    $mod+Shift+2      move container to workspace $WS2;  workspace $WS2
+    $mod+Shift+3      move container to workspace $WS3;  workspace $WS3
+    $mod+Shift+4      move container to workspace $WS4;  workspace $WS4
+    $mod+Shift+5      move container to workspace $WS5;  workspace $WS5
+    $mod+Shift+6      move container to workspace $WS6;  workspace $WS6
+    $mod+Shift+7      move container to workspace $WS7;  workspace $WS7
+    $mod+Shift+8      move container to workspace $WS8;  workspace $WS8
+    $mod+Shift+9      move container to workspace $WS9;  workspace $WS9
+    $mod+Shift+0      move container to workspace $WS10; workspace $WS10
+    $mod+Shift+minus  move container to workspace $WS11; workspace $WS11
+    $mod+Shift+equal  move container to workspace $WS12; workspace $WS12
+    $mod+Shift+bracketleft  move container to workspace $WS13; workspace $WS13
+    $mod+Shift+bracketright move container to workspace $WS14; workspace $WS14
+    $mod+Shift+apostrophe   move container to workspace $WS15; workspace $WS15
+    $mod+Shift+numbersign   move container to workspace $WS16; workspace $WS16
+    $mod+Shift+grave   move container to workspace $WS16; workspace $WS16
+    $mod+Shift+b  move container to workspace $WS17; workspace $WS17
+    $mod+Shift+n  move container to workspace $WS18; workspace $WS18
+    $mod+Shift+m  move container to workspace $WS19; workspace $WS19
+    $mod+Shift+comma move container to workspace $WS20; workspace $WS20
+    $mod+Shift+period   move container to workspace $WS21; workspace $WS21
+    $mod+Shift+slash   move container to workspace $WS22; workspace $WS22
+    $mod+Shift+semicolon   move container to workspace $WS23; workspace $WS23
+
+    # Send container (don't also switch to the workspace)
+    $mod+Ctrl+1               move container to workspace $WS1
+    $mod+Ctrl+2               move container to workspace $WS2
+    $mod+Ctrl+3               move container to workspace $WS3
+    $mod+Ctrl+4               move container to workspace $WS4
+    $mod+Ctrl+5               move container to workspace $WS5
+    $mod+Ctrl+6               move container to workspace $WS6
+    $mod+Ctrl+7               move container to workspace $WS7
+    $mod+Ctrl+8               move container to workspace $WS8
+    $mod+Ctrl+9               move container to workspace $WS9
+    $mod+Ctrl+0               move container to workspace $WS10
+    $mod+Ctrl+minus           move container to workspace $WS11
+    $mod+Ctrl+equal           move container to workspace $WS12
+    $mod+Ctrl+bracketleft    move container to workspace $WS13
+    $mod+Ctrl+bracketright   move container to workspace $WS14
+    $mod+Ctrl+apostrophe     move container to workspace $WS15
+    $mod+Ctrl+numbersign     move container to workspace $WS16
+    $mod+Ctrl+grave     move container to workspace $WS16
+    $mod+Ctrl+b  move container to workspace $WS17
+    $mod+Ctrl+n  move container to workspace $WS18
+    $mod+Ctrl+m  move container to workspace $WS19
+    $mod+Ctrl+comma move container to workspace $WS20
+    $mod+Ctrl+period   move container to workspace $WS21
+    $mod+Ctrl+slash   move container to workspace $WS22
+    $mod+Ctrl+semicolon   move container to workspace $WS23
+}
+
+# Application defaults
+for_window [class="spotify"] move container to workspace $WS16
+for_window [class="Element"] move container to workspace $WS15; layout tabbed
+for_window [class="lightcord"] move container to workspace $WS15
+for_window [app_id="telegramdesktop"] move container to workspace $WS15
+for_window [app_id="thunderbird"] move container to workspace $WS15
+
+# UI applications to autostart
+exec --no-startup-id schildichat-desktop --disable-gpu
+exec --no-startup-id telegram-desktop
+exec --no-startup-id lightcord
+exec --no-startup-id spotify
+exec --no-startup-id env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
+
+exec --no-startup-id gammastep-indicator
+
+default_border none
+hide_edge_borders both
+
+# Yuckiness because the above doesn't work
+font JetBrains mono 10
+titlebar_border_thickness 0                                                     
+titlebar_padding 1
+
+# The best config option :D - breaks "move container to workspace"
+#workspace_auto_back_and_forth yes
+
+include /etc/sway/config.d/*
