@@ -1,0 +1,125 @@
+[user]
+	email = caleb.connolly@linaro.org
+	name = Caleb Connolly
+	signingkey = 83B24DA7FE145076BC38BB250CD904EB673A7C47
+[commit]
+	gpgsign = true
+[color]
+	ui = auto
+[merge]
+	renamelimit = 2000
+	conflictstyle = zdiff3
+[alias]
+	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /' | sort
+	ls = "!git log -28 --oneline" # quick history overview
+	s = "status -s" # short status (much easier to parse)
+	lc = "show --pretty=\"\" --name-only" # list files changed in the given ref (HEAD by default)
+	c = "commit -esm" # Use like `git c "add cool feature"`, opens editor to write description
+	ds = "diff --stat=80"
+	top = "log --oneline -1"
+	fixes = "top --pretty=fixes"
+	rb = "!git rebase -i $(git describe --abbrev=0)" # interactively rebase on the last tag
+	p = "push --force-with-lease" # safer push --force
+	pm = "push --force-with-lease --push-option=merge_request.merge_when_pipeline_succeeds"
+	rest = "restore --staged ."
+	st = "stash"
+	sp = "stash push -m"
+	sls = "stash list"
+	pop = "stash pop"
+	sa = "stash apply"
+	regexadd = "!f() { git diff -U0 \
+                | grepdiff -E \"$1\" --output-matching=hunk \
+                | git apply --cached --unidiff-zero; }; f"
+[sendemail]
+	identity = work
+	chainReplyTo = false
+[sendemail.personal]
+	smtpuser = caleb@connolly.tech
+	smtpserver = 127.0.0.1
+	smtpencryption = STARTTLS
+	smtpserverport = 1025
+[sendemail.work]
+	smtpencryption = tls
+	smtpserver = smtp.gmail.com
+	smtpuser = caleb.connolly@linaro.org
+	smtpserverport = 587
+[sendemail.pmos]
+	from = "Caleb Connolly <caleb@postmarketos.org>"
+	smtpencryption = tls
+	smtpserver = smtp.migadu.com
+	smtpuser = caleb@postmarketos.org
+	smtpserverport = 587 #465
+
+[pull]
+	rebase = true
+[push]
+	default = upstream
+	autoSetupRemote = true
+	followtags = true
+[credential]
+	helper = /usr/lib/git-core/git-credential-libsecret
+[core]
+	excludesfile = /home/cas/.gitignore
+	abbrev = 12
+	editor = nvim
+	# Exit if less than one screen + remove "skipping" markers
+	pager = delta
+	commentChar = ";"
+[absorb]
+	maxStack = 250
+[fixup]
+	menu = fzf --height '60%' \
+                --bind 'tab:toggle-preview' \
+                --preview 'git show --color {+1}' \
+                --preview-window=up:80% \
+                --prompt 'Select commit: '
+	commit = true
+[pretty]
+	fixes = Fixes: %h (\"%s\")
+	date = %cd (\"%s\")
+[rebase]
+	autosquash = true
+	autostash = true
+	instructionFormat = format:%<(18,trunc)%aN | %s
+	updateRefs = true
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[gpg]
+	program = gpg2
+[am]
+	threeWay = true
+[init]
+	defaultBranch = main
+[http]
+	cookiefile = /home/cas/.gitcookies
+[diff]
+	algorithm = histogram
+	colorMoved = default
+	tool = difftastic
+	context = 4
+[b4]
+	sendemail-identity = work
+	prep-cover-template = /home/cas/.config/b4-cover-template
+	ty-send-email = yes
+[checkout]
+	defaultRemote = origin
+[stash]
+	showPatch = true
+[safe]
+	directory = /opt/flutter
+[rerere]
+	enabled = true
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+[branch]
+	sort = -committerdate
+[fetch]
+	prune = true
+[maintenance]
+	repo = /home/cas/git/u-boot
+	repo = /hdd/brute/pmos/enchilada/kernel

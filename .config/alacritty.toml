@@ -1,0 +1,29 @@
+[colors.primary]
+background = "#000000"
+foreground = "#eaeaea"
+
+[font]
+size = 13
+
+[font.bold]
+family = "JetBrains Mono"
+style = "Bold"
+
+[font.bold_italic]
+family = "JetBrains Mono"
+style = "Bold Italic"
+
+[font.italic]
+family = "JetBrains Mono"
+style = "Italic"
+
+[font.normal]
+family = "JetBrains Mono"
+style = "Regular"
+
+[scrolling]
+history = 5000
+multiplier = 3
+
+[shell]
+program = "/bin/zsh"

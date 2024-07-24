@@ -6,7 +6,7 @@
     // Choose the order of the modules
     "modules-left": ["sway/workspaces", "sway/mode"],
     "modules-center": ["clock"],
-    "modules-right": ["custom/spotify", "idle_inhibitor", "pulseaudio", "network", "cpu", "memory", "temperature", "backlight", "battery", "tray"],
+    "modules-right": ["pulseaudio", "network", "temperature", "battery", "custom/power", "tray"],
     // Modules configuration
     "sway/workspaces": {
          "disable-scroll": true,
@@ -19,8 +19,8 @@
              "default": ""
          },
 	 "persistent_workspaces": {
-             "@": ["DP-1"],
-	     "~": ["DP-1"]
+             "@": ["eDP-1"],
+	     "~": ["eDP-1"]
 	 }
      },
     "sway/mode": {
@@ -32,7 +32,7 @@
     },
     "clock": {
         // "timezone": "America/New_York",
-        "format": "{:%H:%M - %Y-%m-%d}",
+        "format": "{:%H:%M - %Y-%m-%d (week %V)}",
     },
     "cpu": {
         "format": "{usage}% ",
@@ -76,7 +76,7 @@
         "format-icons": ["", "", "", "", ""]
     },
     "network": {
-        // "interface": "wlan0", // (Optional) To force the use of this interface
+        //"interface": "eno1", // (Optional) To force the use of this interface
         "format-wifi": "{essid} ({signalStrength}%) ",
         "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
         "format-linked": "{ifname} (No IP) ",
@@ -100,6 +100,10 @@
             "car": "",
             "default": ["", "", ""]
         },
+    },
+    "custom/power": {
+	"exec": "/home/cas/bin/pwrstate.sh",
+	"interval": 5,
     },
     "custom/spotify": {
 	"exec": "playerctl --player=spotify metadata --format=\"{{ title }} - {{ artist }}\"",

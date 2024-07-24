@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Fetches a patch from a given url and tries to apply it to the current directory
+# If GitHub commit links get copy pasted as url, it will append ".patch", else it
+# will take the URL as-is.
+
+# Main motivation behind this: i hate to add many different remotes and when i pick
+# from GitHub or CAF, it should be fast and hassle free.
+#set -x
+
+PATCH=$(mktemp /tmp/XXXXXXXXXXXX.patch)
+
+if [ -z $1 ]; then
+  echo "Usage: getpatch URL"
+  exit 1
+fi
+
+rm "$PATCH" &> /dev/null
+
+URL=$1
+if [[ ${URL} == *github* ]] || [[ ${URL} == *gitlab* ]]; then
+  URL=${URL}.patch
+fi
+
+wget ${URL} -O "$PATCH" -o /dev/null
+git apply -3 --check "$PATCH" && git am -3 "$PATCH"
+
+exit $?

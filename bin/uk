@@ -1,0 +1,66 @@
+#!/bin/bash
+
+VMLINUZ=
+MODULES=
+DTB=
+OUTDIR=.output
+
+usage() {
+    echo "$0 [-vmdh]"
+    echo " -v    install kernel image"
+    echo " -m    install modules"
+    echo " -d    install DTB"
+    echo " -k    kernel outdir (default: $OUTDIR)"
+    echo "defaults to installing them all!"
+    exit 1
+}
+
+while getopts "vmdk:h" OPTION; do
+    case $OPTION in
+    h)
+        usage
+        ;;
+    v)
+        VMLINUZ=1
+        ;;
+    m)
+        MODULES=1
+        ;;
+    d)
+        DTB=1
+        ;;
+    k)
+        OUTDIR=${OPTARG}
+        ;;
+    *)
+        usage
+        ;;
+    esac
+done
+
+if [ -z "$VMLINUZ" ] && [ -z "$MODULES" ] && [ -z "$DTB" ]; then
+    VMLINUZ=1
+    MODULES=1
+    DTB=1
+fi
+
+if [ -n "$VMLINUZ" ]; then
+    set -x
+    cp "$OUTDIR"/arch/arm64/boot/Image.gz /boot/vmlinuz-c630
+    set +x
+fi
+
+if [ -n "$MODULES" ]; then
+    set -x
+    make O="$OUTDIR" INSTALL_MOD_PATH=/usr modules_install
+    set +x
+fi
+
+if [ -n "$DTB" ]; then
+    set -x
+    cp "$OUTDIR"/arch/arm64/boot/dts/qcom/sdm850-lenovo-yoga-c630.dtb /boot/dtbs/
+    set +x
+fi
+
+mkinitcpio -p linux-c630
+grub-mkconfig -o /boot/grub/grub.cfg

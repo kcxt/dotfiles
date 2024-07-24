@@ -31,9 +31,11 @@ HISTSIZE=1000000
 SAVEHIST=1000000
 setopt appendhistory
 #setopt appendhistory autocd
-#unsetopt extendedglob nomatch notify
+unsetopt extendedglob nomatch notify
 
-export TERM=xterm-256color
+if [ "$TERM" = "alacritty" ]; then
+	export TERM=xterm-256color
+fi
 export EDITOR=$(which gedit)
 
 alias cfz="$EDITOR $HOME/.zshrc"
@@ -42,13 +44,14 @@ alias ls="ls --color=auto -h -k -s"
 alias x="chmod +x"
 alias sz="source ~/.zshrc"
 
-alias vim=nvim
-
 alias history="history 0" #Get all history not just last 5 commands
 
 # End of lines configured by zsh-newuser-install
-source $HOME/git/powerlevel10k/powerlevel10k.zsh-theme
-#source ~/powerlevel10k/.purepower
+if [ -f "$HOME/git/powerlevel10k/powerlevel10k.zsh-theme" ]; then
+	source $HOME/git/powerlevel10k/powerlevel10k.zsh-theme
+else
+	source /usr/share/zsh/plugins/powerlevel10k/powerlevel10k.zsh-theme
+fi
 
 # This is important, it makes keybinds work...
 bindkey -e
@@ -116,6 +119,9 @@ source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zs
 
 export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/bin"
+export PATH="$PATH:$HOME/.cargo/bin"
+export PATH="$PATH:$HOME/go/bin"
+export PATH="$PATH:/home/cas/.gem/ruby/3.0.0/bin"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -126,6 +132,10 @@ export PATH="$PATH:$HOME/bin"
 
 # ccache must be before /usr/bin so that we get cache hits
 export PATH="/usr/lib/ccache/bin:$PATH"
+export PATH="/usr/lib/icecream/bin:$PATH"
+#export CCACHE_PREFIX=icecc
+export ICECC_VERSION="$HOME/.config/icecc-aarch64-cc12b090d50df81f30c87fed74a68449.tar.gz"
+#export PATH="/usr/lib/icecream/libexec/icecc/bin/:$PATH"
 
 alias ik="import-key.sh"
 
@@ -133,20 +143,38 @@ alias ik="import-key.sh"
 export PATH=$PATH:$HOME/bin/crosstools/bin
 export PATH=$PATH:$HOME/bin/arm-926ejs-eabi/bin
 export PATH="$PATH:$HOME/bin/gcc-arm-none-eabi-10-2020-q4-major/bin"
+export PATH="$PATH:$HOME/git/aarch64-linux-android-4.9/bin"
 
 export EDITOR=$(which nvim)
 
 export VCPKG_DISABLE_METRICS=1
 
-# Custom functions
-function ovpn() {
-	sudo openvpn $HOME/.openvpn/$1.openvpn
-}
-# VPN back home :D
-alias vpn="ovpn caleb-noah"
-
 function b64() {
 	echo -e "$(echo $1 | base64 -d)\n"
+}
+
+function hex() {
+	val=$1
+	# That is, assign pad to the second argument
+	# "$2" if it is set, otherwise assign it to
+	# the literal "2" - the default is to pad
+	# to 2 characters
+	pad=${2:-2}
+	printf "0x%0${pad}x\n" $val
+}
+
+function bin() {
+	val=$1
+	pad=${2:-8}
+	bin=$(echo "obase=2;${val}" | bc)
+	printf "0b%0${pad}s\n" $val | tr ' ' '0'
+}
+
+# Pull environment from an application
+function yoinkenv() {
+	APP=${1:-phosh}
+	echo "Yoinking environment from $APP"
+	eval $(sudo cat /proc/`pidof $APP`/environ | tr '\0' '\n' | grep -v '^TERM=' | awk '{ print "export \"" $0 "\"" }')
 }
 
 ## UBPORTS
@@ -158,11 +186,15 @@ local UBENV=$HOME/ubports/enchilada/documentation/ubenv
 autoload bashcompinit
 bashcompinit
 eval "$(register-python-argcomplete pmbootstrap)"
-alias pmbootstrap="pmbootstrap -y --details-to-stdout"
-alias mr="mrhlpr"
+alias pmb="pmbootstrap"
+alias pmbt="pmbootstrap -c $HOME/.config/pmbootstrap-test.cfg"
+alias pmbc="pmbootstrap -c $HOME/.config/pmbootstrap-clean.cfg"
+alias pmbg="~/git/pmbootstrap-glibc/pmbootstrap.py -c $HOME/.config/pmbootstrap-glibc.cfg"
+
 
 alias mandroid="make CC=/usr/bin/clang O=.output/ ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- -j16"
 
+local HOST_ARCH=$(uname -m)
 local PMTOOLS=$HOME/pmos/tools/
 [[ -f "$PMTOOLS"/pmenv ]] && source $PMTOOLS/pmenv
 [[ -f "$PMTOOLS"/automation.sh ]] && source $PMTOOLS/automation.sh
@@ -187,6 +219,15 @@ habuild ()
     fi
 }
 
+## ESP-12
+
+export PATH="$PATH:/home/cas/esp/xtensa-lx106-elf/bin"
+export IDF_PATH=~/esp/ESP8266_RTOS_SDK
+
+## Pico SDK
+
+export PICO_SDK_PATH="/usr/share/pico-sdk"
+
 ## Android crap
 
 # makekernelflash: create a flashable AnyKernel3 zip
@@ -206,11 +247,95 @@ makekernelflash() {
 
 export PATH=$HOME/bin/arm-linux-androideabi-4.9/bin:$PATH
 export PATH=$HOME/bin/aarch64-linux-android-4.9/bin:$PATH
-alias ma="make CC=aarch64-linux-android-gcc CROSS_COMPILE=aarch64-linux-android- O=.output/ ARCH=arm64 -j14"
 
 # Start polkit and keyring before sway
-alias w="$HOME/.local/bin/swayinit"
+alias w="$HOME/bin/swayinit"
 alias c='git --git-dir=$HOME/.gitdotfiles/ --work-tree=$HOME'
+alias rg="rg --vimgrep" # Always search hidden files with ripgrep
+alias i="tmux attach -d -t weechat"
+alias u='picocom $(rrst pty)'
+alias xxd="xxd -a -R always"
+alias less="less -R"
 
+ircloop() {
+	while true; do
+		while (tmux list-clients | grep -q weechat); do
+			sleep 1	
+		done
+		tmux attach -d -t weechat || tmux
+		sleep 3
+	done
+}
+
+
+alias lion="ssh -t lion tmux attach -t 3"
+
+# Lei q alias
+alias leiq="lei q -I https://lore.kernel.org/all/ --threads --dedupe=mid -jobs=,2"
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+VSCODE_SUGGEST=1
+[[ "$TERM_PROGRAM" == "vscode" ]] && . "$(code --locate-shell-integration-path zsh)"
+
+# Common directories
+alias aports="cd ~/.local/var/pmbootstrap/cache_git/aports_upstream"
+alias pma="cd ~/.local/var/pmbootstrap/cache_git/pmaports"
+alias ca="cd ~/.local/var/pmbootstrap-test/cache_git/caports"
+alias k="cd ~/pmos/enchilada/kernel"
+alias pmb="cd ~/pmos/pmbootstrap"
+
+alias g="git"
+alias ga="git add"
+alias gas="git absorb"
+alias gad="git add .;"
+alias gap="git add --patch"
+alias gs="git s"
+alias gls="git ls"
+
+alias gcp="git cherry-pick"
+alias gcm="git c" # invoke git alias
+alias gca="git commit --amend"
+alias gcf="git commit --fixup"
+alias gf="git fixup"
+alias grb="git rebase"
+alias grbi="git rebase -i"
+alias grsth="git reset --hard"
+alias grst="git reset --soft"
+
+# Stash stuff
+alias gsp="git sp" # Stash push
+alias gsa="git sa" # Stash apply
+alias gpo="git pop" # Stash pop
+alias gpop="git pop;" # Stash pop head
+alias gsl="git stash list"
+alias gsc="git stash clear"
+
+gco() {
+	if [ -e "$(git rev-parse --git-path CHERRY_PICK_HEAD)" ]; then
+		git cherry-pick --continue
+	else
+		git rebase --continue
+	fi
+}
+gab() {
+	if [ -e "$(git rev-parse --git-path CHERRY_PICK_HEAD)" ]; then
+		git cherry-pick --abort
+	else
+		git rebase --abort
+	fi
+}
+
+# restic
+alias restic-lion="restic -r sftp:noah:/mnt/raid/Documents/Caleb/Backups/restic-lion"
+
+# par - format paragraphs in nvim
+export PARINIT='Tbgq B=.,?_A_a Q=_s>|'
+
+PATH="/home/cas/perl5/bin${PATH:+:${PATH}}"; export PATH;
+PERL5LIB="/home/cas/perl5/lib/perl5${PERL5LIB:+:${PERL5LIB}}"; export PERL5LIB;
+PERL_LOCAL_LIB_ROOT="/home/cas/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROOT}}"; export PERL_LOCAL_LIB_ROOT;
+PERL_MB_OPT="--install_base \"/home/cas/perl5\""; export PERL_MB_OPT;
+PERL_MM_OPT="INSTALL_BASE=/home/cas/perl5"; export PERL_MM_OPT;
+
+eval "$(zoxide init --cmd cd zsh)"

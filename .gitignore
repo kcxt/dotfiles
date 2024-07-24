@@ -1,0 +1,8 @@
+.vscode-ctags
+.vscode/
+.cache/
+.ccls-cache/
+
+compile_commands.json
+edl_config.json
+

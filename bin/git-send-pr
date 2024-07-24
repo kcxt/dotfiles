@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# Check we got at least 3 args
+if [ $# -lt 3 ]; then
+	echo "Usage: $0 start url end [git-send-email options]"
+	exit 1
+fi
+
+start="$1"
+url="$2"
+end="$3"
+shift 3
+
+push_ref() {
+	git rev-parse --abbrev-ref --symbolic-full-name $1
+}
+
+if [ "$start" = "{}" ]; then
+	start=$(git describe --all --abbrev=0 --exclude "*$(push_ref HEAD)")
+	echo "Using start: $start"
+fi
+
+pull=$(mktemp /tmp/git-pull-XXXXXXX.pull)
+
+echo "From: $(git config user.name) <$(git config user.email)>" >> $pull
+echo "Date: $(date -R)" >> $pull
+echo "Subject: [PULL] Please pull $(push_ref @{push})" >> $pull
+echo >> $pull
+
+git request-pull "$start" "$url" "$end" >> $pull
+
+git send-email --annotate "$@" $pull
+

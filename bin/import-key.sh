@@ -20,11 +20,14 @@ if grep "Not Found" <(echo "$RECV_KEY"); then
 	exit 1
 fi
 
-echo -e "$RECV_KEY"
+#echo -e "$RECV_KEY"
 echo 
-read -r -p "Are you sure you want to import this key? [y/N] " ans
+read -r -p "Are you sure you want to import this key? [Y/n] " ans
 case "$ans" in
-    [yY][eE][sS]|[yY]) 
+    [nN][oO])
+        exit 1
+        ;;
+    *)
         echo "$RECV_KEY" | gpg2 --import
         ;;
 esac

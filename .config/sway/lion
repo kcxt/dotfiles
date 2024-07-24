@@ -1,0 +1,27 @@
+
+### Output configuration
+set $Mon1 DP-2
+set $Mon2 DP-1
+set $Mon3 HDMI-A-1
+set $Mon4 HDMI-A-1
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output * bg ~/Pictures/wallpaper.jpg fill
+set $swaylock swaylock -f -i ~/Pictures/wallpaper.jpg
+output $Mon1 resolution 3840x2160 position 2160,2160
+output $Mon2 resolution 2160x3840 position 0,1580 transform 90
+output $Mon3 resolution 3840x2160 position 2160,0 transform 180
+
+#output $Mon1 resolution 3840x2160 position 2160,650
+#output $Mon3 resolution 3840x2160 position 6000,650
+#output $Mon2 resolution 3840x2160 transform 270 position 0,0
+
+gaps inner 2
+gaps outer 1
+
+for_window [app_id="Alacritty-scratch"] {
+	floating enable;
+	resize set 3740 1200;
+	move position 50 940;
+	move scratchpad
+}
+

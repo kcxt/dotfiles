@@ -1,0 +1,51 @@
+
+### Output configuration
+set $Mon1 eDP-1
+set $Mon2 DP-3
+set $Mon3 eDP-1
+
+set $browser chromium
+
+#set $Mon4 eDP-3 #HDMI-A-1
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output * bg ~/Pictures/wallpaper.jpg fill
+output $Mon1 resolution 3840x2160 position 1920,0
+
+bindsym --no-repeat $mod+Ctrl+r exec $HOME/bin/rotate.sh $Mon1
+
+gaps inner 1
+gaps outer 0
+
+input "1267:12476:hid-over-i2c_04F3:30BC_Touchpad" {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    click_method button_areas
+}
+
+# weird touchscreen....
+input "1267:10242:hid-over-i2c_04F3:2802" {
+    drag enabled
+    map_to_output $Mon1
+}
+
+# And pen
+input "1267:10242:hid-over-i2c_04F3:2802_Stylus" {
+    drag enabled
+    map_to_output $Mon1
+}
+
+
+input * xkb_layout "us"
+
+exec swaymsg "workspace $WS15; layout tabbed; workspace $WS1"
+
+#exec_always lisgd.sh
+
+for_window [app_id="Alacritty-scratch"] {
+	floating enable;
+	resize set 1820 500;
+	move position 50 580;
+	move scratchpad
+}
+

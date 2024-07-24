@@ -1,0 +1,42 @@
+
+### Output configuration
+set $Mon1 eDP-1
+set $Mon2 DP-1
+set $Mon3 eDP-1
+
+#set $Mon4 eDP-3 #HDMI-A-1
+# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+output * bg ~/Pictures/wallpaper.png fill
+set $swaylock swaylock -f -i ~/Pictures/wallpaper.png
+output $Mon3 resolution 1920x1080 position 0,0
+
+# No suspend button so reuse the phone hangup key (cuz who tf needs it)
+bindsym XF86HangupPhone exec --no-startup-id systemctl suspend
+
+gaps inner 1
+gaps outer 0
+
+input "2:14:ETPS/2_Elantech_Touchpad" {
+    dwt enabled
+    tap enabled
+    natural_scroll enabled
+    middle_emulation enabled
+    accel_profile flat
+    pointer_accel 0.2
+}
+
+input "2:14:ETPS/2_Elantech_TrackPoint" {
+    dwt disabled
+    middle_emulation enabled
+    accel_profile flat
+    pointer_accel 0.3
+    scroll_factor 0.5
+}
+
+input "8146:32773:Melfas_LGDisplay_Incell_Touch" {
+    drag enabled
+    map_to_output eDP-1
+}
+
+exec swaymsg "workspace $WS15; layout tabbed; workspace $WS1"
+

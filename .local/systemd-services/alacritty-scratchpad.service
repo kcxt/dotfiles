@@ -1,0 +1,12 @@
+[Unit]
+Description=auto restart scratchpad terminal when i inevitably kill it
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/alacritty --class Alacritty-scratch
+Restart=always
+RestartDelay=1s
+KillMode=process
+
+[Install]
+WantedBy=default.target
