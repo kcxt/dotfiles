@@ -190,7 +190,7 @@ bindsym {
 
     # backlight
     XF86MonBrightnessUp exec light -T 1.5
-    XF86MonBrightnessDown exec light -T 0.85
+    XF86MonBrightnessDown exec light -T 0.6
 
     #
     # Layout stuff:
@@ -279,16 +279,16 @@ workspace $WS11 output $Mon2
 workspace $WS12 output $Mon2
 workspace $WS13 output $Mon2
 workspace $WS14 output $Mon2
-workspace $WS15 output $Mon1
-workspace $WS16 output $Mon1
+workspace $WS15 output $Mon3
+workspace $WS16 output $Mon3
 workspace $WS17 output $Mon3
 workspace $WS18 output $Mon3
 workspace $WS19 output $Mon3
 workspace $WS24 output $Mon2
-workspace $WS20 output $Mon4 $Mon3
-workspace $WS21 output $Mon4 $Mon3
-workspace $WS22 output $Mon4 $Mon3
-workspace $WS23 output $Mon4 $Mon3
+workspace $WS20 output $Mon4 $Mon2
+workspace $WS21 output $Mon4 $Mon2
+workspace $WS22 output $Mon4 $Mon2
+workspace $WS23 output $Mon4 $Mon2
 
 
 bindsym {
@@ -414,7 +414,7 @@ for_window [app_id="org.twosheds.iwgtk"] {
 
 exec alacritty --class Alacritty-scratch
 exec telegram-desktop
-exec discord-canary-wlr
+# exec discord-canary-wlr
 exec spotify
 exec env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
 exec gammastep-indicator

@@ -185,6 +185,7 @@ local UBENV=$HOME/ubports/enchilada/documentation/ubenv
 # Enable autocomplete for pmbootrstrap commands
 autoload bashcompinit
 bashcompinit
+alias pmbootstrap="pmbootstrap --details-to-stdout"
 eval "$(register-python-argcomplete pmbootstrap)"
 alias pmb="pmbootstrap"
 alias pmbt="pmbootstrap -c $HOME/.config/pmbootstrap-test.cfg"

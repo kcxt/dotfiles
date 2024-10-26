@@ -75,7 +75,8 @@
                 --prompt 'Select commit: '
 	commit = true
 [pretty]
-	fixes = Fixes: %h (\"%s\")
+	fixes = Fixes: %h ("%s")
+	sum = * %C(auto)%h: %s%n%n%b
 	date = %cd (\"%s\")
 [rebase]
 	autosquash = true
@@ -120,6 +121,15 @@
 	sort = -committerdate
 [fetch]
 	prune = true
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[url "ssh://git@gitlab.com/"]
+	insteadOf = https://gitlab.com/
+[url "ssh://git@git.codelinaro.org/"]
+	insteadOf = https://git.codelinaro.org/
+
 [maintenance]
 	repo = /home/cas/git/u-boot
 	repo = /hdd/brute/pmos/enchilada/kernel
+	repo = /home/cas/pmos/enchilada/kernel
+	repo = /home/cas/pmos/pmbootstrap
