@@ -1,0 +1,54 @@
+#!/bin/sh
+# A crapp tool to push and open a gitlab MR
+# with just one command!
+
+# --force-with-lease ensures that we don't override any commits which only exist
+# on the remote. But it will let you overwrite commits you've ammended.
+cmd="git push --force-with-lease -o merge_request.create -o merge_request.description="
+
+case $# in
+	1)
+		# Only set description
+		cmd="${cmd}\"$1\""
+	;;
+	2)
+		cmd="${cmd}\"$2\" -o merge_request.title=\"$1\""
+	;;
+	*)
+		echo "Usage: $0 [title] <description>"
+		exit 1
+	;;
+esac
+
+# Check if the remote is up to date (if git push would actually do anything)
+# if it isn't (because you forgot about git-pmr when pushing) then we can prompt
+# to push anyway
+# https://unix.stackexchange.com/questions/678795/is-there-a-better-way-than-string-output-hacks-to-check-git-checkout-needs-a-pul
+same_commit(){
+    set -- $(git rev-parse "$@")
+    [ "$1" = "$2" ]
+}
+
+local_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
+remote_ref="$(git rev-parse --abbrev-ref --symbolic-full-name @{u} 2>/dev/null)"
+upstream="$(echo $remote_ref | cut -d"/" -f1)"
+remote_branch="${remote_ref#$upstream/}"
+if [ -n "$remote_branch" ]; then
+	# FIXME: this is gonna suck when you have a lot of remotes...
+	git remote update
+	# If the remote branch is identical to this one then git push won't
+	# do anything and GitLab's special options handling won't trigger...
+	# work around this by deleting the remote branch iff it's identical
+	# to our local one.
+	if same_commit HEAD "$remote_ref"; then
+		read -r -p "Remote branch '$remote_ref' is up to date. Delete it? [y/N] " response
+		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+			git push -d "$upstream" "$remote_branch"
+		else
+			exit 0
+		fi
+	fi
+fi
+
+eval "$cmd"
+

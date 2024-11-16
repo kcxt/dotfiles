@@ -96,6 +96,7 @@
 	defaultBranch = main
 [http]
 	cookiefile = /home/cas/.gitcookies
+	followRedirects = true
 [diff]
 	algorithm = histogram
 	colorMoved = default
@@ -121,8 +122,6 @@
 	sort = -committerdate
 [fetch]
 	prune = true
-[url "ssh://git@github.com/"]
-	insteadOf = https://github.com/
 [url "ssh://git@gitlab.com/"]
 	insteadOf = https://gitlab.com/
 [url "ssh://git@git.codelinaro.org/"]
