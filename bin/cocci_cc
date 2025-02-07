@@ -1,0 +1,34 @@
+#!/bin/bash
+#
+# cocci_cc - send cover letter to all mailing lists referenced in a patch series
+# intended to be used as 'git send-email --cc-cmd=cocci_cc ...'
+# done by Wolfram Sang in 2012-14, version 20140204 - WTFPLv2
+
+shopt -s extglob
+cd $(git rev-parse --show-toplevel) > /dev/null
+
+patch="$1"
+cmd="scripts/get_maintainer.pl --no-rolestats"
+to_cmd="$cmd --no-l"
+cc_cmd="$cmd -l --no-m --no-r"
+
+function get_addrs() {
+        get_cmd="$1"
+	#echo "Using cmd: $get_cmd" >&2
+	$get_cmd $patch | grep -v "linux-kernel@vger.kernel.org" 2>/dev/null | sort -u
+}
+
+to_addrs="$(get_addrs "$to_cmd")"
+
+if [ "$(basename "$0")" = "cocci_cc" ]; then
+	cc_addrs="$(get_addrs "$cc_cmd")"
+	# Print only emails that are unique to the CC list
+	# prevent someone showing up in TO and CC
+	#echo -e "CC addrs:\n$cc_addrs\n"
+	#echo -e "TO addrs:\n$to_addrs\n\n"
+	comm -32 <(echo -e "$cc_addrs") <(echo -e "$to_addrs")
+else
+	echo -e "$to_addrs"
+fi
+
+
