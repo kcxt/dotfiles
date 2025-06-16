@@ -1,0 +1,54 @@
+theme = "monokaikai"
+
+[editor]
+bufferline = "multiple"
+color-modes = true
+line-number = "absolute"
+completion-trigger-len = 1
+completion-timeout = 5
+completion-replace = true
+text-width = 105
+rulers = [100, 140]
+end-of-line-diagnostics = "hint"
+soft-wrap.enable = true
+soft-wrap.wrap-at-text-width = true
+
+[editor.inline-diagnostics]
+cursor-line = "error"
+other-lines = "error"
+
+[editor.indent-guides]
+render = true
+character = "▏"
+skip-levels = 1
+
+[editor.gutters]
+layout = ["diff", "line-numbers", "spacer", "diagnostics"]
+
+[editor.gutters.line-numbers]
+min-width = 1
+
+[editor.cursor-shape]
+insert = "bar"
+
+[editor.statusline]
+mode.normal = "NORMAL"
+mode.insert = "INSERT"
+mode.select = "SELECT"
+right = [
+  "diagnostics", "file-type",
+  "separator",
+  "selections", "register", "position-percentage", "position", "total-line-numbers",
+  "separator", "spacer",
+  "version-control",
+  "spacer"
+]
+
+[editor.lsp]
+display-messages = true
+display-inlay-hints = true
+
+[keys.normal]
+A-q = ":fmt"
+C-x = ":reflow"
+A-a = "@map<C-x>o<left><esc>"
