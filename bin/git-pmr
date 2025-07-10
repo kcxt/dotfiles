@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/zsh
 # A crapp tool to push and open a gitlab MR
 # with just one command!
 
@@ -13,6 +13,9 @@ case $# in
 	;;
 	2)
 		cmd="${cmd}\"$2\" -o merge_request.title=\"$1\""
+	;;
+	0)
+		cmd="${cmd}\"$(git log -1 --format="%b" | sed -E 's/$/\\n/g' | tr -d '\n')\""
 	;;
 	*)
 		echo "Usage: $0 [title] <description>"
