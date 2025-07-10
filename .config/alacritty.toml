@@ -25,5 +25,7 @@ style = "Regular"
 history = 5000
 multiplier = 3
 
-[shell]
+[terminal]
+
+[terminal.shell]
 program = "/bin/zsh"
