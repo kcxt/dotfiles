@@ -36,7 +36,6 @@ unsetopt extendedglob nomatch notify
 if [ "$TERM" = "alacritty" ]; then
 	export TERM=xterm-256color
 fi
-export EDITOR=$(which gedit)
 
 alias cfz="$EDITOR $HOME/.zshrc"
 alias ls="ls --color=auto -h -k -s"
@@ -121,7 +120,7 @@ export PATH="$PATH:$HOME/.local/bin"
 export PATH="$PATH:$HOME/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
 export PATH="$PATH:$HOME/go/bin"
-export PATH="$PATH:/home/cas/.gem/ruby/3.0.0/bin"
+export PATH="$PATH:/home/cas/.local/share/gem/ruby/3.3.0/bin"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
@@ -145,7 +144,7 @@ export PATH=$PATH:$HOME/bin/arm-926ejs-eabi/bin
 export PATH="$PATH:$HOME/bin/gcc-arm-none-eabi-10-2020-q4-major/bin"
 export PATH="$PATH:$HOME/git/aarch64-linux-android-4.9/bin"
 
-export EDITOR=$(which nvim)
+export EDITOR=$(which hx)
 
 export VCPKG_DISABLE_METRICS=1
 
@@ -188,7 +187,7 @@ bashcompinit
 alias pmbootstrap="pmbootstrap --details-to-stdout"
 eval "$(register-python-argcomplete pmbootstrap)"
 alias pmb="pmbootstrap"
-alias pmbt="pmbootstrap -c $HOME/.config/pmbootstrap-test.cfg"
+alias pmbt="~/pmos/pmb2/pmbootstrap.py -c $HOME/.config/pmbootstrap-test.cfg"
 alias pmbc="pmbootstrap -c $HOME/.config/pmbootstrap-clean.cfg"
 alias pmbg="~/git/pmbootstrap-glibc/pmbootstrap.py -c $HOME/.config/pmbootstrap-glibc.cfg"
 
@@ -257,6 +256,8 @@ alias i="tmux attach -d -t weechat"
 alias u='picocom $(rrst pty)'
 alias xxd="xxd -a -R always"
 alias less="less -R"
+# USE HELIX
+alias vim="hx"
 
 ircloop() {
 	while true; do
@@ -269,7 +270,7 @@ ircloop() {
 }
 
 
-alias lion="ssh -t lion tmux attach -t 3"
+alias lion="ssh -t lion tmux attach -t weechat"
 
 # Lei q alias
 alias leiq="lei q -I https://lore.kernel.org/all/ --threads --dedupe=mid -jobs=,2"
@@ -281,7 +282,7 @@ VSCODE_SUGGEST=1
 
 # Common directories
 alias aports="cd ~/.local/var/pmbootstrap/cache_git/aports_upstream"
-alias pma="cd ~/.local/var/pmbootstrap/cache_git/pmaports"
+alias pma="cd ~/.local/var/pmbootstrap/cache/git/pmaports"
 alias ca="cd ~/.local/var/pmbootstrap-test/cache_git/caports"
 alias k="cd ~/pmos/enchilada/kernel"
 alias pmb="cd ~/pmos/pmbootstrap"
@@ -297,12 +298,16 @@ alias gls="git ls"
 alias gcp="git cherry-pick"
 alias gcm="git c" # invoke git alias
 alias gca="git commit --amend"
-alias gcf="git commit --fixup"
+alias gcf="git commit --no-gpg-sign --fixup"
 alias gf="git fixup"
 alias grb="git rebase"
 alias grbi="git rebase -i"
 alias grsth="git reset --hard"
 alias grst="git reset --soft"
+
+# git-temp aliases
+alias gt="git temp"
+alias gtr="git temp restore"
 
 # Stash stuff
 alias gsp="git sp" # Stash push
@@ -311,6 +316,8 @@ alias gpo="git pop" # Stash pop
 alias gpop="git pop;" # Stash pop head
 alias gsl="git stash list"
 alias gsc="git stash clear"
+
+alias paccept="b4 shazam -s -k -S -l"
 
 gco() {
 	if [ -e "$(git rev-parse --git-path CHERRY_PICK_HEAD)" ]; then
@@ -339,4 +346,10 @@ PERL_LOCAL_LIB_ROOT="/home/cas/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROO
 PERL_MB_OPT="--install_base \"/home/cas/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/cas/perl5"; export PERL_MM_OPT;
 
+[[ -n "$ASCIINEMA_REC" ]] || tore
+
 eval "$(zoxide init --cmd cd zsh)"
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
