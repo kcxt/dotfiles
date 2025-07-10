@@ -1,9 +1,9 @@
 [user]
-	email = caleb.connolly@linaro.org
-	name = Caleb Connolly
+	email = casey.connolly@linaro.org
+	name = Casey Connolly
 	signingkey = 83B24DA7FE145076BC38BB250CD904EB673A7C47
-[commit]
-	gpgsign = true
+#[commit]
+#	gpgsign = true
 [color]
 	ui = auto
 [merge]
@@ -11,15 +11,21 @@
 	conflictstyle = zdiff3
 [alias]
 	aliases = !git config --get-regexp 'alias.*' | colrm 1 6 | sed 's/[ ]/ = /' | sort
-	ls = "!git log -28 --oneline" # quick history overview
-	s = "status -s" # short status (much easier to parse)
-	lc = "show --pretty=\"\" --name-only" # list files changed in the given ref (HEAD by default)
-	c = "commit -esm" # Use like `git c "add cool feature"`, opens editor to write description
+	# quick history overview
+	ls = "!git log -28 --oneline"
+	# short status (much easier to parse)
+	s = "status -s"
+	# list files changed in the given ref (HEAD by default)
+	lc = "show --pretty=\"\" --name-only"
+	# Use like `git c "add cool feature"`, opens editor to write description
+	c = "commit -esm"
 	ds = "diff --stat=80"
 	top = "log --oneline -1"
 	fixes = "top --pretty=fixes"
-	rb = "!git rebase -i $(git describe --abbrev=0)" # interactively rebase on the last tag
-	p = "push --force-with-lease" # safer push --force
+	# interactively rebase on the last tag
+	rb = "!git rebase -i $(git describe --abbrev=0)"
+	# safer push --force
+	p = "push --force-with-lease"
 	pm = "push --force-with-lease --push-option=merge_request.merge_when_pipeline_succeeds"
 	rest = "restore --staged ."
 	st = "stash"
@@ -41,13 +47,13 @@
 [sendemail.work]
 	smtpencryption = tls
 	smtpserver = smtp.gmail.com
-	smtpuser = caleb.connolly@linaro.org
+	smtpuser = casey.connolly@linaro.org
 	smtpserverport = 587
 [sendemail.pmos]
-	from = "Caleb Connolly <caleb@postmarketos.org>"
+	from = "Casey Connolly <kcxt@postmarketos.org>"
 	smtpencryption = tls
 	smtpserver = smtp.migadu.com
-	smtpuser = caleb@postmarketos.org
+	smtpuser = kcxt@postmarketos.org
 	smtpserverport = 587 #465
 
 [pull]
@@ -61,7 +67,7 @@
 [core]
 	excludesfile = /home/cas/.gitignore
 	abbrev = 12
-	editor = nvim
+	editor = hx
 	# Exit if less than one screen + remove "skipping" markers
 	pager = delta
 	commentChar = ";"
@@ -75,7 +81,7 @@
                 --prompt 'Select commit: '
 	commit = true
 [pretty]
-	fixes = Fixes: %h ("%s")
+	fixes = Fixes: %h (\"%s\")
 	sum = * %C(auto)%h: %s%n%n%b
 	date = %cd (\"%s\")
 [rebase]
@@ -102,6 +108,8 @@
 	colorMoved = default
 	tool = difftastic
 	context = 4
+[diff "bin"]
+    textconv = hexdump -v -C
 [b4]
 	sendemail-identity = work
 	prep-cover-template = /home/cas/.config/b4-cover-template
@@ -122,10 +130,13 @@
 	sort = -committerdate
 [fetch]
 	prune = true
-[url "ssh://git@gitlab.com/"]
-	insteadOf = https://gitlab.com/
+#[url "ssh://git@gitlab.com/"]
+#	insteadOf = https://gitlab.com/
 [url "ssh://git@git.codelinaro.org/"]
 	insteadOf = https://git.codelinaro.org/
+#[url "https://gitlab.postmarketos.org/postmarketOS/"]
+#	insteadOf = https://gitlab.com/postmarketOS/
+
 
 [maintenance]
 	repo = /home/cas/git/u-boot
