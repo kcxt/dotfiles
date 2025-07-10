@@ -129,11 +129,22 @@ export PATH="$PATH:/home/cas/.local/share/gem/ruby/3.3.0/bin"
 ### MY STUFF ###
 ################
 
+unlock_keyring() {
+	echo -n 'Login password: ' >&2
+	local _UNLOCK_PASSWORD
+	read -s _UNLOCK_PASSWORD || return
+	eval $(echo -n "${_UNLOCK_PASSWORD}" \
+		| gnome-keyring-daemon --replace --unlock --components=pkcs11,secrets,ssh \
+		| sed -e 's/^/export /')
+	unset _UNLOCK_PASSWORD
+	echo '' >&2
+}
+
 # ccache must be before /usr/bin so that we get cache hits
 export PATH="/usr/lib/ccache/bin:$PATH"
-export PATH="/usr/lib/icecream/bin:$PATH"
+#export PATH="/usr/lib/icecream/bin:$PATH"
 #export CCACHE_PREFIX=icecc
-export ICECC_VERSION="$HOME/.config/icecc-aarch64-cc12b090d50df81f30c87fed74a68449.tar.gz"
+#export ICECC_VERSION="$HOME/.config/icecc-aarch64-cc12b090d50df81f30c87fed74a68449.tar.gz"
 #export PATH="/usr/lib/icecream/libexec/icecc/bin/:$PATH"
 
 alias ik="import-key.sh"
@@ -258,6 +269,7 @@ alias xxd="xxd -a -R always"
 alias less="less -R"
 # USE HELIX
 alias vim="hx"
+alias pastebin="curl -F\"file=@-\" https://0x0.st"
 
 ircloop() {
 	while true; do

@@ -8,7 +8,6 @@ include /etc/sway/config.d/*
 
 # Include device specific config
 
-input * xkb_layout "gb"
 
 # Logo key. Use Mod1 for Alt.
 set $mod Mod4
@@ -41,7 +40,7 @@ for_window [class=".*"] opacity $opacity
 for_window [app_id=".*"] opacity $opacity
 #for_window [app_id="^Alacritty.*$"] opacity 0.85
 
-exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
+#exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP=sway
 # FIXME: Deprecated, needed for user slices
 #exec systemctl --user import-environment
 
@@ -56,7 +55,7 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY SWAYSO
 
 exec_always killall swayidle
 exec_always swayidle -w \
-          timeout 1200 '$swaylock' \
+          timeout 1500 '$swaylock' \
           timeout 900 'swaymsg "output * dpms off"' resume 'swaymsg "output * dpms on"' \
           before-sleep '$swaylock'
 
@@ -65,23 +64,23 @@ for_window [class="vlc"] inhibit_idle fullscreen
 
 ### Input configuration
 
-input "1133:16505:Logitech_G_Pro" {
+exec_always swaymsg input "1133:16505:Logitech_G_Pro" {
     dwt disabled
     accel_profile adaptive
     pointer_accel -0.1
-    scroll_factor 1
+    scroll_factor 0.5
 }
 
-input "type:keyboard" {
+exec_always swaymsg input "type:keyboard" {
     repeat_rate 40
     repeat_delay 230
 }
 
-input "1386:830:Wacom_Intuos_PT_M_2_Finger" {
+exec_always swaymsg input "1386:830:Wacom_Intuos_PT_M_2_Finger" {
 	natural_scroll enabled
 }
 
-input "1386:830:Wacom_Intuos_PT_M_2_Pen" {
+exec_always swaymsg input "1386:830:Wacom_Intuos_PT_M_2_Pen" {
 	map_to_output DP-2
 }
 
@@ -130,9 +129,10 @@ bindsym {
 	# FIXME: for some reason vscode hits a TRAP unless systemd-run allocates a pty and I pass --wait to code, weird as this is only required when launching it
 	# from sway.
 #    $mod+x          exec systemd-run -t --user --slice=vscode.slice
-    $mod+x          exec code --enable-features=UseOzonePlatform --ozone-platform=wayland
+    $mod+x          exec code --disable-gpu
     # Kill focused window
     $mod+q kill
+    $mod+shift+q kill
 
     # Start your launcher
     $mod+d exec j4-dmenu-desktop --display-binary --dmenu='bemenu -i --nb "#3f3f3f" --nf "#dcdccc" --fn "JetBrains Mono 12"' --term='alacritty'
@@ -141,18 +141,16 @@ bindsym {
     Print exec $HOME/bin/scap.sh -u
     # Screenshot and send off
     Ctrl+Print exec $HOME/bin/scap.sh
-
-    $mod+c reload
+    Shift+Print exec $HOME/bin/scap.sh -w
 
     # Reload the configuration file
-    $mod+Shift+c reload
+    $mod+c reload
 
 
     # Dismiss notification
     Ctrl+Space exec makoctl dismiss
     Ctrl+grave exec makoctl restore
     $mod+Ctrl+l exec $swaylock
-    #
     # Moving around:
     #
     # Move your focus around
@@ -236,6 +234,8 @@ bindsym {
     $mod+Ctrl+Return exec rrst pwr
 }
 
+bindcode $mod+Ctrl+94 exec rrst baud
+
 #
 # workspaces
 #
@@ -284,11 +284,11 @@ workspace $WS16 output $Mon3
 workspace $WS17 output $Mon3
 workspace $WS18 output $Mon3
 workspace $WS19 output $Mon3
-workspace $WS24 output $Mon2
-workspace $WS20 output $Mon4 $Mon2
-workspace $WS21 output $Mon4 $Mon2
-workspace $WS22 output $Mon4 $Mon2
-workspace $WS23 output $Mon4 $Mon2
+workspace $WS24 output $Mon3
+workspace $WS20 output $Mon4 $Mon3
+workspace $WS21 output $Mon4 $Mon3
+workspace $WS22 output $Mon4 $Mon3
+workspace $WS23 output $Mon4 $Mon3
 
 
 bindsym {
@@ -373,9 +373,6 @@ bindsym {
     $mod+Ctrl+semicolon   move container to workspace $WS23
     $mod+Ctrl+p		move container to workspace $WS24
 
-    # Move workspaces
-    $mod+Shift+d exec ~/.config/sway/ws-switch.sh
-
     $mod+Shift+BackSpace scratchpad show
 }
 
@@ -401,6 +398,7 @@ for_window [class="cnes"] floating enable
 for_window [class="notch-viewer"] floating enable
 for_window [class="pritunl"] floating enable
 for_window [class="REAPER"] floating enable
+for_window [app_id="qemu"] floating enable
 # winetricks
 for_window [app_id="^zenity$"] floating enable
 # prevent chrome from floating when i open unity docs
@@ -412,11 +410,12 @@ for_window [app_id="org.twosheds.iwgtk"] {
 
 # UI applications to autostart
 
-exec alacritty --class Alacritty-scratch
+exec element-desktop 
 exec telegram-desktop
-# exec discord-canary-wlr
+exec vencord-desktop
 exec spotify
-exec env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
+#exec env MOZ_ENABLE_WAYLAND=1 /usr/lib/thunderbird/thunderbird
+exec betterbird
 exec gammastep-indicator
 
 default_border none
@@ -424,7 +423,7 @@ hide_edge_borders both
 
 # Yuckiness because the above doesn't work
 font JetBrains mono 10
-titlebar_border_thickness 0                                                     
+titlebar_border_thickness 0
 titlebar_padding 1
 
 # The best config option :D - breaks "move container to workspace"

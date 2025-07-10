@@ -3,8 +3,6 @@
 WM=${1:-sway}
 #WM=Hyprland
 
-
-
 # environment
 export QT_QPA_PLATFORM=wayland
 export GDK_BACKEND=wayland
