@@ -9,10 +9,10 @@ cmd 'packadd paq-nvim'               -- load the package manager
 require "paq" {
 	{"savq/paq-nvim", opt = true};
 	"shougo/deoplete-lsp";
-	{"shougo/deoplete.nvim", run = fn["remote#host#UpdateRemotePlugins"], enable_at_startup = 1};
-	{"nvim-treesitter/nvim-treesitter", run=function() require('nvim-treesitter.install').update({ with_sync = true }) end};
+	{"shougo/deoplete.nvim", build = fn["remote#host#UpdateRemotePlugins"], enable_at_startup = 1};
+	{"nvim-treesitter/nvim-treesitter", build=function() require('nvim-treesitter.install').update({ with_sync = true }) end};
 	"neovim/nvim-lspconfig";
-	{"junegunn/fzf", run = fn["fzf#install"]};
+	{"junegunn/fzf", build = fn["fzf#install"]};
 	"ojroques/nvim-lspfuzzy";
 	"antoinemadec/FixCursorHold.nvim"; -- required by nvim-lightbulb
 	"kosayoda/nvim-lightbulb";
