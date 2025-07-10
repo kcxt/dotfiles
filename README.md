@@ -29,10 +29,19 @@ sudo tailscale up --operator cas --login-server https://rex.connolly.tech
 
 ## Set up dotfiles on new machine
 
+
+```sh
+ssh-keygen -t ecdsa -f .ssh/id_ecdsa
+ln -s id_ecdsa .ssh/id_rsa
+ln -s id_ecdsa.pub .ssh/id_rsa.pub
+```
+
 1. Add ssh key to github
 2. Clone bare repo
 
 ```sh
+mkdir -p ~/git
+git clone git@github.com:romkatv/powerlevel10k.git ~/git/powerlevel10k
 git clone --bare git@github.com:calebccff/dotfiles.git .gitdotfiles
 ```
 
@@ -55,7 +64,7 @@ TODO
 Alpine:
 
 ```sh
-sudo apk add zsh zsh-theme-powerlevel10k zsh-autosugguestions zsh-syntax-highlighting py3-argcomplete
+sudo apk add zsh zsh-theme-powerlevel10k zsh-autosuggestions zsh-syntax-highlighting py3-argcomplete zoxide
 ```
 
 5. Set shell
@@ -63,5 +72,15 @@ sudo apk add zsh zsh-theme-powerlevel10k zsh-autosugguestions zsh-syntax-highlig
 ```sh
 chsh
  # /usr/bin/zsh
+```
+
+6. Install atuin
+
+```sh
+bash <(curl --proto '=https' --tlsv1.2 -sSf https://setup.atuin.sh)
+
+atuin login
+atuin import auto
+atuin sync
 ```
 
