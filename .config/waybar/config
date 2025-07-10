@@ -1,28 +1,33 @@
 {
-    // "layer": "top", // Waybar at top layer
-    // "position": "bottom", // Waybar position (top|bottom|left|right)
-    "height": 30, // Waybar height (to be removed for auto height)
-    // "width": 1280, // Waybar width
+    "layer": "top", // Waybar at top layer
+    "position": "bottom", // Waybar at the bottom of your screen
+    "height": 30, // Waybar height
+    // "width": 1366, // Waybar width
     // Choose the order of the modules
-    "modules-left": ["sway/workspaces", "sway/mode"],
-    "modules-center": ["clock"],
-    "modules-right": ["pulseaudio", "network", "temperature", "battery", "custom/power", "tray"],
-    // Modules configuration
-    "sway/workspaces": {
-         "disable-scroll": true,
-         "all-outputs": false,
-	 "numeric-first": true,
-         "format": "{name}",
-         "format-icons": {
-             "urgent": "",
-             "focused": "",
-             "default": ""
-         },
-	 "persistent_workspaces": {
-             "@": ["eDP-1"],
-	     "~": ["eDP-1"]
-	 }
-     },
+    "modules-left": ["niri/workspaces", "niri/window"],
+    //"modules-center": ["sway/window"],
+    //"modules-center": ["mpd"],
+    "modules-right": ["tray", "pulseaudio", "network", "cpu", "memory", "battery", "backlight", "clock"],
+    "hyprland/workspaces": {
+        "disable-scroll": true,
+        "all-outputs": false,
+        "format": "{icon}",
+        "format-icons": {
+            "1": "1",
+            "2": "2",
+            "3": "3",
+            "4": "4",
+            "5": "5",
+            "6": "6",
+            "7": "7",
+            "8": "8",
+            "9": "9",
+            "10": "0",
+            "urgent": "",
+            "focused": "",
+            "default": ""
+        }
+    },
     "sway/mode": {
         "format": "<span style=\"italic\">{}</span>"
     },
@@ -31,84 +36,90 @@
         "spacing": 10
     },
     "clock": {
-        // "timezone": "America/New_York",
-        "format": "{:%H:%M - %Y-%m-%d (week %V)}",
+	"format": "{:%d-%b %H:%M:%OS}",
+        "format-alt": "{:%A, %Y-%m-%d %H:%M:%OS %Z}",
+	"interval": 1
     },
     "cpu": {
-        "format": "{usage}% ",
-        "tooltip": false
+        "format": " {usage:02}",
+        "interval": 2
     },
     "memory": {
-        "format": "{}% "
-    },
-    "temperature": {
-        // "thermal-zone": 2,
-        // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
-        "critical-threshold": 80,
-        // "format-critical": "{temperatureC}°C {icon}",
-        "format": "{temperatureC}°C {icon}",
-        "format-icons": ["", "", ""]
-    },
-    "idle_inhibitor": {
-        "format": "{icon}",
-        "format-icons": {
-            "activated": "",
-            "deactivated": ""
-        }
-    },
-    "backlight": {
-        // "device": "acpi_video1",
-        "format": "{percent}% {icon}",
-        "format-icons": ["", ""]
+        "format": " {used:0.2f}",
+        "interval": 2
     },
     "battery": {
+        // "bat": "BAT0",
         "states": {
-            // "good": 95,
-            "warning": 30,
-            "critical": 15
+            "good": 75,
+            "warning": 20,
+            "critical": 10
         },
-        "format": "{capacity}% {icon}",
-        "format-charging": "{capacity}% ",
-        "format-plugged": "{capacity}% ",
-        "format-alt": "{time} {icon}",
+        "interval": 10,
+        "format": "{icon}{capacity:02} | {power:0.1f}W",
         // "format-good": "", // An empty format will hide the module
         // "format-full": "",
-        "format-icons": ["", "", "", "", ""]
+        "format-icons": [" ", " ", " ", " ", " "]
     },
     "network": {
-        //"interface": "eno1", // (Optional) To force the use of this interface
-        "format-wifi": "{essid} ({signalStrength}%) ",
-        "format-ethernet": "{ifname}: {ipaddr}/{cidr} ",
-        "format-linked": "{ifname} (No IP) ",
-        "format-disconnected": "Disconnected ⚠",
-        "format-alt": "{ifname}: {ipaddr}/{cidr}"
+        // "interface": "wlp1s0", // (Optional) To force the use of this interface
+        "format-wifi": " {essid} {signaldBm}",
+        "format-ethernet": "⇌ {ifname}: {ipaddr}",
+        "format-disconnected": "⚠ Disconnected",
+	"on-click": "/sbin/networkmanager_dmenu",
+        "interval": 5
     },
     "pulseaudio": {
-        // "scroll-step": 1, // %, can be a float
-        "format": "{volume}% {icon} {format_source}",
-        "format-bluetooth": "{volume}% {icon} {format_source}",
-        "format-bluetooth-muted": " {icon} {format_source}",
-        "format-muted": " {format_source}",
-        "format-source": "{volume}% ",
-        "format-source-muted": "",
+        //"scroll-step": 1,
+        "format": "{icon} {volume:02}",
+        "format-bluetooth": "{icon} {volume:02} ",
+        "format-muted": "",
         "format-icons": {
-            "headphone": "",
-            "hands-free": "",
+            "headphones": "",
+            "handsfree": "",
             "headset": "",
             "phone": "",
             "portable": "",
             "car": "",
-            "default": ["", "", ""]
+            "default": ["", ""]
         },
+        "on-click": "pavucontrol"
     },
-    "custom/power": {
-	"exec": "/home/cas/bin/pwrstate.sh",
-	"interval": 5,
+	"backlight": {
+		"format": "{percent} {icon} ",
+		"format-icons": ["", ""],
+	},
+    "mpd": {
+	"format": "{stateIcon}{randomIcon} {artist} -  {title} ({elapsedTime:%M:%S}/{totalTime:%M:%S})",
+	"format-disconnected": "",
+	"format-stopped": "",
+	"interval": 2,
+	"consume-icons": {
+		"on": " " // Icon shows only when "consume" is on
+	},
+	"random-icons": {
+		"on": " "
+	},
+	"repeat-icons": {
+		"on": " "
+	},
+	"single-icons": {
+		"on": "1 "
+	},
+	"state-icons": {
+		"paused": "",
+		"playing": "",
+		"exec": "/usr/bin/mpdp"
+	},
+	"tooltip-format": "{artist} – {album} – {title}",
+	"tooltip-format-disconnected": "MPD (disconnected)",
+	"on-click": "swaymsg [title=\"ncmpcpp\"] focus"
     },
     "custom/spotify": {
-	"exec": "playerctl --player=spotify metadata --format=\"{{ title }} - {{ artist }}\"",
-	"format": " {} ",
-	"interval": 1
+        "format": " {}",
+        "max-length": 40,
+        "interval": 30, // Remove this if your script is endless and write in loop
+        "exec": "$HOME/.config/waybar/mediaplayer.sh 2> /dev/null", // Script in resources folder
+        "exec-if": "pgrep spotify"
     }
 }
-
