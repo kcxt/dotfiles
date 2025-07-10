@@ -16,7 +16,7 @@ formatter = { command = "mdformat", args = ["--wrap", "80", "-"] }
 
 [[language]]
 name = "git-commit"
-text-width = 72
+file-types = [{ glob = "COMMIT_EDITMSG" }, { glob = "MERGE_MSG" }, "pull"]
 
 [[language]]
 name = "bitbake"
