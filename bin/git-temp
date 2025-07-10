@@ -1,0 +1,43 @@
+#!/bin/sh -e
+
+prog="$(basename $0)"
+prog="${prog#git-}"
+if [ "$1" = "-h" -o "$1" = "--help" ]; then
+	{
+	printf 'git %s: quickly switch to a detached HEAD state to apply patches\n' "$prog"
+	printf '          for testing or otherwise mess with git history without\n'
+	printf '          screwing up a branch.\n\n'
+	printf 'Usage: git %s [restore]\n\n' "$prog"
+	printf '   restore	switch back to your original branch\n'
+	} >&2
+	exit 1
+fi
+
+git_dir="$(git rev-parse --git-dir)"
+old_branch_path="$git_dir/TEMP_ORIG_BRANCH"
+
+if [ "$1" = "restore" ]; then
+	if [ ! -f "$old_branch_path" ]; then
+		printf "Not on a temp checkout! No branch to restore\n" >&2
+		exit 1
+	fi
+
+	old_branch="$(cat "$old_branch_path")"
+	rm "$old_branch_path"
+	git checkout "$old_branch"
+	exit 0
+fi
+
+old_branch="$(git branch --show-current)"
+if [ -z "$old_branch" ]; then
+	printf "No branch currently checked out\n" >&2
+	exit 1
+fi
+
+# Stash the branch we were on
+printf '%s\n' "$old_branch" > "$old_branch_path"
+
+printf "git-temp: switching from branch '%s'\n" "$old_branch" >&2
+git switch --detach
+# Now create a new commit SHA don't we don't update-refs the old branch
+git commit --amend --no-edit
