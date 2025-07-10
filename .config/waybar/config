@@ -138,9 +138,12 @@
 	"on-click": "swaymsg [title=\"ncmpcpp\"] focus"
     },
     "custom/spotify": {
+        "format": " {}",
+        "max-length": 40,
+        "interval": 30, // Remove this if your script is endless and write in loop
         "exec-if": "pgrep spotify",
-	"exec": "playerctl --player=spotify metadata --format=\"{{ title }} - {{ artist }}\"",
-	"format": " {} ",
-	"interval": 1
+	    "exec": "playerctl --player=spotify metadata --format=\"{{ title }} - {{ artist }}\"",
+	    "format": " {} ",
+	    "interval": 1
     }
 }
