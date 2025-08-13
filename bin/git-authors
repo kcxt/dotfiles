@@ -1,0 +1,36 @@
+#!/bin/sh
+
+format=""
+ignore_self=false
+
+for arg; do
+	case $arg in
+	--cc)
+		format="cc"
+		;;
+	--to)
+		format="to"
+		;;
+	--not-me|-n)
+		ignore_self=true
+		;;
+	*)
+		range="$arg"
+		;;
+	esac
+done
+
+cmd='git log --format="%aN <%aE>" "$range" | sort | uniq'
+if $ignore_self; then
+	cmd="$cmd | grep -v \"$(git config user.email)\" 2>/dev/null"
+fi
+
+output="$(eval "$cmd")"
+
+if [ -n "$format" ]; then
+	printf '%s' "$output" | xargs -I {} echo "'--$format=\"{}\"'" | tr -s '\n' ' '
+	printf '\n'
+else
+	printf '%s\n' "$output"
+fi
+
