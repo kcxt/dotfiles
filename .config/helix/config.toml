@@ -52,3 +52,4 @@ display-inlay-hints = true
 A-q = ":fmt"
 C-x = ":reflow"
 A-a = "@map<C-x>o<left><esc>"
+C-r = "redo"
