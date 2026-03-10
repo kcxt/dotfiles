@@ -206,7 +206,7 @@ alias pmbg="~/git/pmbootstrap-glibc/pmbootstrap.py -c $HOME/.config/pmbootstrap-
 alias mandroid="make CC=/usr/bin/clang O=.output/ ARCH=arm64 CROSS_COMPILE=aarch64-linux-android- CROSS_COMPILE_ARM32=arm-linux-androideabi- -j16"
 
 local HOST_ARCH=$(uname -m)
-local PMTOOLS=$HOME/pmos/tools/
+local PMTOOLS=$HOME/pmos/tools
 [[ -f "$PMTOOLS"/pmenv ]] && source $PMTOOLS/pmenv
 [[ -f "$PMTOOLS"/automation.sh ]] && source $PMTOOLS/automation.sh
 
@@ -364,4 +364,7 @@ eval "$(zoxide init --cmd cd zsh)"
 
 . "$HOME/.atuin/bin/env"
 
-eval "$(atuin init zsh)"
+eval "$(atuin init zsh --disable-up-arrow)"
+
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
