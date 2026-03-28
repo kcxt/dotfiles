@@ -63,7 +63,7 @@ def open_port(port: str, baud: int, wait_for_port: bool=True) -> Port:
         while not os.path.exists(port):
             sleep(0.1)
 
-    error: Exception = None
+    error: Exception
     for _ in range(retry):
         try:
             console = Port(port, baud)
@@ -75,10 +75,10 @@ def open_port(port: str, baud: int, wait_for_port: bool=True) -> Port:
             sleep(0.05) # We might be racing with udev to set correct permissions
 
     print(f"Failed to open port after {retry} tries...")
-    print(error)
+    raise error
 
 
-def record_abort(console: Port, firstline: str) -> [str]:
+def record_abort(console: Port, firstline: str) -> list[str]:
     print(f"{firstline}", end="")
     abort = [firstline]
     console.timeout = None # Blocking read
@@ -107,7 +107,7 @@ def record_abort(console: Port, firstline: str) -> [str]:
             return abort
 
 
-def detect_abort(console: Port) -> [str]:
+def detect_abort(console: Port) -> list[str]:
     line = ""
     while True:
         (fds, _, _) = select.select([console.fd], [], [], 0.05)
@@ -148,36 +148,38 @@ def find_func_file(addr: int, outdir: str) -> tuple[int, int, str, str]:
     with open(os.path.join(outdir, "u-boot.sym.sorted"), "w") as f:
         f.write("".join(syms))
 
-    func = None
-    last_func = None
+    func = ""
+    last_func = ""
     fn_addr = 0
     last_addr = 0
-    file = None
-    match_sym = re.compile(r"^([a-fA-F0-9]+).* ([a-zA-Z0-9_.-]+)$")
+    section = ""
+    file = ""
+    match_sym = re.compile(r"^([a-fA-F0-9]+)\s+[a-z]\s+[A-Z]\s([a-zA-Z0-9_.]+).* ([a-zA-Z0-9_.-]+)$")
     while len(syms) > 0:
-        line = syms.pop(0)
+        line = syms.pop(0).strip()
         m = match_sym.search(line)
-        #print(f"{line} -- {m}")
         if not m:
             continue
+        
+        # print(f"{m.group(1)} // {m.group(2)} // {m.group(3)}")
         
         fn_addr = int(m.group(1), 16)
         if fn_addr == 0:
             continue
 
         last_func = func
-        func = m.group(2)
+        func = str(m.group(3))
 
         #print(m.groups())
 
         if fn_addr > addr:
             break
         last_addr = fn_addr
-        
-    if len(syms) == 0:
-        print(f"Couldn't find function for address {addr:#x}")
-        return (0, 0, "", "")
-    
+        section = str(m.group(2))
+
+    if len(syms) == 0 or not last_func:
+        raise LookupError(f"Couldn't find function for address {addr:#x}")
+
     # now find the file...
     lines = open(os.path.join(outdir, "u-boot.map")).readlines()
     while "Discarded input sections" not in lines.pop(0):
@@ -187,15 +189,23 @@ def find_func_file(addr: int, outdir: str) -> tuple[int, int, str, str]:
         if is_next:
             file = line.strip().split()[-1]
             break
-        if last_func in line:
+        if last_func and last_func in line:
             is_next = True
-    
+
+    # Assembly code may not be compiled to its own .o file, if we couldn't find
+    # a file in u-boot.map then just decomp the whole U-Boot binary :D
+    if (not file or file.startswith(".")) and section == ".text_rest":
+        file = "u-boot"
+
+    if not file:
+        raise LookupError(f"Couldn't find file for function {last_func}")
+
     return (last_addr, addr - last_addr, file, last_func)
 
 # Parse the register dump, find the nearest function symbol and decode the object
 # file it belongs to, then find the line number in the file of the instruction that
 # caused the abort and print it. Or just print the file path
-def decode_abort(abort: [str], outdir: str):
+def decode_abort(abort: list[str], outdir: str):
     cross_compile = ""
     if "CROSS_COMPILE" in os.environ:
         cross_compile = os.environ["CROSS_COMPILE"]
@@ -211,8 +221,11 @@ def decode_abort(abort: [str], outdir: str):
     if addr == 0:
         return
 
-    print(f"Crashed in {func}() +{offset:#x} (symbol addr {addr:#x})")
-    decomp_path = os.path.join("/tmp/", f"{os.path.basename(file)[:-2]}.S")
+    print(f"Crashed at {elr:#x} in {func}() +{offset:#x} (symbol addr {addr:#x})")
+    basefile = os.path.basename(file)
+    if basefile.endswith(".c"):
+        basefile = basefile[:-2]
+    decomp_path = os.path.join("/tmp/", f"{basefile}.S")
     os.popen(f"bash -c '{cross_compile}objdump -Sdl {os.path.join(outdir, file)} > {decomp_path}'").readlines()
 
     decomp = open(decomp_path).readlines()
