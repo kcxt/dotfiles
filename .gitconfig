@@ -65,7 +65,7 @@
 [push]
 	default = simple
 	autoSetupRemote = true
-	followtags = true
+	#followtags = true
 [credential]
 	helper = /usr/lib/git-core/git-credential-libsecret
 [core]
@@ -145,6 +145,5 @@
 
 [maintenance]
 	repo = /home/cas/git/u-boot
-	repo = /hdd/brute/pmos/enchilada/kernel
 	repo = /home/cas/pmos/enchilada/kernel
 	repo = /home/cas/pmos/pmbootstrap

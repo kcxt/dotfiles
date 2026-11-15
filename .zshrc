@@ -301,7 +301,7 @@ alias pmb="cd ~/pmos/pmbootstrap"
 
 alias g="git"
 alias ga="git add"
-alias gas="git absorb"
+alias gas="git abs"
 alias gad="git add .;"
 alias gap="git add --patch"
 alias gs="git s"
@@ -316,6 +316,7 @@ alias grb="git rebase"
 alias grbi="git rebase -i"
 alias grsth="git reset --hard"
 alias grst="git reset --soft"
+alias gh="git head"
 
 # git-temp aliases
 alias gt="git temp"
@@ -358,7 +359,13 @@ PERL_LOCAL_LIB_ROOT="/home/cas/perl5${PERL_LOCAL_LIB_ROOT:+:${PERL_LOCAL_LIB_ROO
 PERL_MB_OPT="--install_base \"/home/cas/perl5\""; export PERL_MB_OPT;
 PERL_MM_OPT="INSTALL_BASE=/home/cas/perl5"; export PERL_MM_OPT;
 
+#export RBDEV_PREFIX=/hdd/brute/pmos/ipodclassic/cross
+
 [[ -n "$ASCIINEMA_REC" ]] || tore
+
+alias tn="tore n:new"
+alias td="tore n:dismiss"
+alias tnr="tore r:new"
 
 eval "$(zoxide init --cmd cd zsh)"
 
